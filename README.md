@@ -1,5 +1,4 @@
-```markdown
-# 🕶️ E-commerce AR
+# E-commerce AR
 ---
 
 ##  Stack tecnológico
