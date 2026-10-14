@@ -1,80 +1,129 @@
-# ecommerce-ar
+```markdown
+# 🕶️ E-commerce AR
+---
 
-E-commerce con try-on AR — Proyecto académico
+##  Stack tecnológico
 
-# Regla de oro
+| Capa | Tecnología |
+|---|---|
+| Frontend | Next.js + React |
+| AR |  |
+| Backend | NestJS + Node.js |
+| Base de datos | Supabase (PostgreSQL) |
+| Auth | Supabase Auth |
+| Deploy | Vercel + Supabase |
 
-Nadie pushea directo a main ni a dev. Todo entra por Pull Request.
+---
 
-# Estructura de ramas
+## Instalación
 
-Main ← producción (solo recibe merges de dev)
-└──→dev ← integración (recibe merges de feature/HU-XX)
-└──→feature/HU-XX-descripcion ← una rama por Historia de Usuario
+### 1. Clonar el repositorio
 
-Flujo resumido:
-git checkout dev && git pull
-git checkout feature/HU-XX-descripcion
-...trabajar...
-git add . && git commit -m "HU-XX: mensaje"
-git push
-git merge dev (para actualizar)
-Crear PR en GitHub → base: dev
-Compañero aprueba
-Merge + Delete branch
-it checkout dev && git pull
+```bash
+git clone https://github.com/AnderWindriver/ecommerce-ar.git
+cd ecommerce-ar
+```
 
-Flujo por HU
-1️⃣ Arrancar la HU
+### 2. Instalar dependencias
 
-    git checkout dev
-    git pull origin dev
-    git checkout feature/HU-XX-descripcion
-    git pull origin feature/HU-XX-descripcion
+```bash
+npm install
+```
 
-Ejemplo:
+### 3. Configurar variables de entorno
+
+Copiar el archivo de ejemplo:
+
+```bash
+cp .env.example .env.local
+```
+
+Rellenar las variables con los valores del proyecto en Supabase.
+
+### 4. Correr en desarrollo
+
+```bash
+npm run dev
+```
+
+Abrir [http://localhost:3000](http://localhost:3000) en el navegador.
+
+---
+
+## Flujo de trabajo con Git
+
+### Estructura de ramas
+
+```
+main   ← producción (solo recibe merges de dev)
+ └── dev   ← integración (recibe merges de feature/HU-XX)
+      └── feature/HU-XX-descripcion
+```
+
+### Regla de oro
+
+> **Nadie pushea directo a `main` ni a `dev`. Todo entra por Pull Request.**
+
+### Flujo por Historia de Usuario
+
+```bash
+# 1. Actualizar dev
 git checkout dev
 git pull origin dev
-git checkout feature/HU-12-Repositorio GitHub con ramas por feature
-git pull origin feature/HU-12-Repositorio GitHub con ramas por feature
 
-2️⃣ Trabajar y commitear
+# 2. Crear rama feature
+git checkout -b feature/HU-XX-descripcion
 
-    git add .
-    git commit -m "HU-XX: descripción breve del cambio"
-    git push
+# 3. Trabajar y commitear
+git add .
+git commit -m "HU-XX: descripción breve del cambio"
+git push -u origin feature/HU-XX-descripcion
 
-Formato de commit obligatorio: HU-XX: mensaje
-Ejemplo: HU-12: crear estructura del catálogo
+# 4. Crear PR en GitHub → base: dev
+# 5. Aprobación de un compañero
+# 6. Merge + Delete branch
+```
 
-3️⃣ Antes de crear el PR (evitar conflictos)
+### Convenciones
 
-    git checkout dev
-    git pull origin dev
-    git checkout feature/HU-XX-descripcion
-    git merge dev
+| Elemento | Formato | Ejemplo |
+|---|---|---|
+| Rama feature | `feature/HU-XX-descripcion` | `feature/HU-12-catalogo-productos` |
+| Rama fix | `fix/HU-XX-descripcion` | `fix/HU-17-login-error` |
+| Commit | `HU-XX: mensaje` | `HU-15: agregar validación de email` |
+| PR title | `HU-XX: Título de la HU` | `HU-15: Registro con email y contraseña` |
 
-# resolver conflictos si hay
+---
 
-    git push
+## 📋 Estructura del proyecto
 
-4️⃣ Crear el Pull Request en GitHub
-Un pull request es una propuesta para fusionar los cambios de código que hiciste en una rama hacia otra rama
-¿Porque hacemos el pullrequest en vez de mandarlo de una al repo?
-El PR obliga a que otro miembro del equipo revise el código antes de integrarlo, lo que reduce bugs, errores de lógica y credenciales filtradas; además deja un historial claro de qué cambió, quién lo aprobó y por qué (pueden ser ustedes mismo porque asi es el plan free) , lo cual es clave para la trazabilidad. Sin PR, cualquiera podría romper dev sin que nadie se entere hasta que sea tarde.
+```
+ecommerce-ar/
+├── app/                 # Rutas de Next.js
+├── components/          # Componentes React (incluye AR)
+├── lib/                 # Utilidades y lógica pura
+├── public/              # Assets estáticos (modelos GLB)
+├── .env.example         # Plantilla de variables de entorno
+├── .gitignore
+├── README.md
+└── package.json
+```
 
-Formato del PR:
-Base: dev ← Compare: feature/HU-XX-descripcion  
- Título: HU-XX: Título de la HU
-Descripción: pegar la HU
+---
 
-5️⃣ Revisión y merge
+## 🧪 Pruebas
 
-Se hace Merge pull request → Confirm merge.
-Click en Delete branch (borra la rama remota).
+### Probar la AR en desktop
+1. `npm run dev`
+2. Abrir `http://localhost:3000`
+3. Click en "Probar en AR" en cualquier producto.
 
-6️⃣ Volver a dev limpio
+### Probar la AR en celular
+1. Levantar el servidor con `ngrok`:
+   ```bash
+   npx ngrok http 3000
+   ```
+2. Abrir la URL de ngrok en el navegador del celular.
+3. Aceptar el permiso de cámara.
 
-git checkout dev
-git pull origin dev
-git branch -d feature/HU-XX-descripcion
+---
