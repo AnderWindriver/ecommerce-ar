@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sombra - Probador AR</title>
+  <link rel="stylesheet" href="/src/tienda.css">
+</head>
+<body>
+
+  <header>
+    <div class="header-top">
+      <div class="logo">PROBADOR AR</div>
+      <nav class="header-nav">
+        <a href="/rubor.html">Rubor</a>
+        <a href="/labial.html">Labial</a>
+        <a href="/sombra.html">Sombra</a>
+        <a href="/probador/" class="destacado">Probar en AR</a>
+      </nav>
+    </div>
+  </header>
+
+  <h1 class="titulo-seccion">Sombra</h1>
+  <div class="grilla" id="grilla"></div>
+
+  <footer>Probador AR · Demo educativa</footer>
+
+  <script type="module">
+    import { cargarLista } from '/src/lista.js';
+    cargarLista('sombra');
+  </script>
+</body>
+</html>
