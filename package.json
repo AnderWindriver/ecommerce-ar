@@ -1,0 +1,25 @@
+{
+  "name": "ecommerce-ar",
+  "version": "1.0.0",
+  "description": "E-commerce con try-on AR — Proyecto académico",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AnderWindriver/ecommerce-ar.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/AnderWindriver/ecommerce-ar/issues"
+  },
+  "homepage": "https://github.com/AnderWindriver/ecommerce-ar#readme",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.118.0",
+    "dotenv": "^18.0.8"
+  }
+}
