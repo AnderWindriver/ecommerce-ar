@@ -109,7 +109,7 @@ export const productos = {
 };
 
 
-// Buscar un producto por categoría e id
+// Buscar un producto específico por su categoría y su ID
 export function buscarProducto(tipo, id) {
   const lista = productos[tipo] || [];
   return lista.find(p => p.id === id);

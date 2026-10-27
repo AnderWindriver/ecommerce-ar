@@ -10,12 +10,23 @@
 
   <header>
     <div class="header-top">
-      <div class="logo">PROBADOR AR</div>
+      <a href="/" class="logo" style="text-decoration: none; color: inherit;">PROBADOR AR</a>
       <nav class="header-nav">
         <a href="/rubor.html">Rubor</a>
         <a href="/labial.html">Labial</a>
         <a href="/sombra.html">Sombra</a>
-        <a href="/probador/" class="destacado">Probar en AR</a>
+        <div class="mini-carrito-wrapper">
+          <button id="btn-carrito-menu" class="btn-carrito-menu">
+            🛒 Carrito (<span id="contador-carrito">0</span>)
+          </button>
+          <div id="panel-mini-carrito" class="panel-mini-carrito">
+            <div id="items-mini-carrito" class="items-mini-carrito"></div>
+            <div class="footer-mini-carrito">
+              <button id="btn-ir-carrito">Ver Carrito Completo</button>
+            </div>
+          </div>
+        </div>
+        <a href="/ar/" class="destacado">Probar en AR</a>
       </nav>
     </div>
   </header>
@@ -24,6 +35,29 @@
 
   <footer>Probador AR · Demo educativa</footer>
 
+  <!-- El molde invisible -->
+  <template id="template-producto">
+    <img class="detalle-img" id="imagen-prod" src="" alt="">
+    <div class="detalle-info">
+      <h1 id="prod-nombre"></h1>
+      <div class="detalle-precio" id="prod-precio"></div>
+      <p class="detalle-desc" id="prod-desc"></p>
+
+      <div class="selector-tonos">
+        <span class="label">Tono</span>
+        <span class="nombre-tono" id="nombre-tono"></span>
+        <div class="lista-tonos" id="lista-tonos"></div>
+      </div>
+
+      <div style="display: flex; gap: 12px; margin-top: 20px;">
+        <button class="btn-probar" id="btn-agregar" style="background: #fff; color: #000; border: 2px solid #000; flex: 1;">AGREGAR AL CARRITO</button>
+        <a class="btn-probar" id="btn-probar" style="flex: 1; text-align: center;">PROBAR EN AR</a>
+      </div>
+    </div>
+  </template>
+
+  <!-- Scripts al final -->
   <script type="module" src="/src/producto.js"></script>
+  <script type="module" src="/src/ui-carrito.js"></script>
 </body>
 </html>

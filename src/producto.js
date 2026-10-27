@@ -1,12 +1,14 @@
 import { buscarProducto } from './productos.js';
+import { agregarAlCarrito } from './carrito.js';
 
-// Lee la URL: ?tipo=labial&id=l1
+// 1. Leer los parámetros de la URL
 const params = new URLSearchParams(window.location.search);
 const tipo = params.get('tipo');
 const id = params.get('id');
 
 const detalle = document.getElementById('detalle');
 
+// 2. Verificar que tengamos los datos y que el producto exista
 if (!tipo || !id) {
   detalle.innerHTML = '<p>Producto no especificado.</p>';
 } else {
@@ -20,34 +22,36 @@ if (!tipo || !id) {
   }
 }
 
-
+// 3. La función que dibuja todo
 function renderProducto(prod, tipo) {
-  // Estado: q tono esta activo
   let tonoActual = prod.tonos[0];
 
-  detalle.innerHTML = `
-    <img class="detalle-img" id="imagen-prod" src="${tonoActual.imagen}" alt="${prod.nombre}">
-    <div class="detalle-info">
-      <h1>${prod.nombre}</h1>
-      <div class="detalle-precio">$${prod.precio.toLocaleString('es-AR')}</div>
-      <p class="detalle-desc">${prod.descripcion}</p>
+  // Clonamos el molde del HTML
+  const template = document.getElementById('template-producto');
+  const clone = template.content.cloneNode(true);
 
-      <div class="selector-tonos">
-        <span class="label">Tono</span>
-        <span class="nombre-tono" id="nombre-tono">${tonoActual.nombre}</span>
-        <div class="lista-tonos" id="lista-tonos"></div>
-      </div>
+  // Buscamos los elementos dentro del clon
+  const img = clone.getElementById('imagen-prod');
+  const h1 = clone.getElementById('prod-nombre');
+  const precio = clone.getElementById('prod-precio');
+  const desc = clone.getElementById('prod-desc');
+  const nombreTono = clone.getElementById('nombre-tono');
+  const listaTonos = clone.getElementById('lista-tonos');
+  const btnProbar = clone.getElementById('btn-probar');
+  const btnAgregar = clone.getElementById('btn-agregar');
 
-      <a class="btn-probar" id="btn-probar">Probar en AR</a>
-    </div>
-  `;
+  // Llenamos los datos base
+  img.src = tonoActual.imagen;
+  img.alt = prod.nombre;
+  h1.textContent = prod.nombre;
+  precio.textContent = '$' + prod.precio.toLocaleString('es-AR');
+  desc.textContent = prod.descripcion;
+  nombreTono.textContent = tonoActual.nombre;
 
-  const listaTonos = document.getElementById('lista-tonos');
-  const nombreTono = document.getElementById('nombre-tono');
-  const imagenProd = document.getElementById('imagen-prod');
-  const btnProbar = document.getElementById('btn-probar');
+  // Actualizar el botón de AR
+  btnProbar.href = `/ar/?tipo=${tipo}&id=${prod.id}`;
 
-  // Crear un circulo por cada tono
+  // Generar los circulitos de los tonos
   prod.tonos.forEach((tono, i) => {
     const circulo = document.createElement('div');
     circulo.className = 'tono' + (i === 0 ? ' activo' : '');
@@ -56,27 +60,26 @@ function renderProducto(prod, tipo) {
 
     circulo.addEventListener('click', () => {
       tonoActual = tono;
-
-      // Actualizar UI
       nombreTono.textContent = tono.nombre;
-      imagenProd.src = tono.imagen;
-
-      // Marcar como activo
+      img.src = tono.imagen;
+      
+      // Actualizamos la clase activa
       listaTonos.querySelector('.activo')?.classList.remove('activo');
       circulo.classList.add('activo');
-
-      // Actualizar el link 
-      actualizarBoton();
     });
 
     listaTonos.appendChild(circulo);
   });
 
-  // El boton arma la URL con el color del tono activo
-  function actualizarBoton() {
-    const colorCodificado = encodeURIComponent(tonoActual.color);
-    btnProbar.href = `/ar/?tipo=${tipo}&id=${prod.id}&color=${colorCodificado}`;
-  }
+  // Evento del botón Agregar al Carrito
+  btnAgregar.addEventListener('click', () => {
+    agregarAlCarrito(prod, tonoActual);
+    btnAgregar.textContent = '¡AGREGADO!';
+    setTimeout(() => { btnAgregar.textContent = 'AGREGAR AL CARRITO'; }, 1500);
+     window.dispatchEvent(new Event('focus'))
+  });
 
-  actualizarBoton(); // arranca con el primer tono
+  // Inyectamos el clon completo en la página
+  detalle.innerHTML = ''; // Limpiamos el contenedor
+  detalle.appendChild(clone); // Metemos el clon
 }

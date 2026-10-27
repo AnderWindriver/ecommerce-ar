@@ -222,3 +222,88 @@ footer {
   .detalle { grid-template-columns: 1fr; padding: 30px 20px; gap: 30px; }
   .header-nav { display: none; }
 }
+
+/* Contenedor del mini-carrito */
+.mini-carrito-wrapper {
+  position: relative;
+}
+
+.btn-carrito-menu {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+
+.panel-mini-carrito {
+  display: none; /* Oculto por defecto */
+  position: absolute;
+  top: 35px;
+  right: 0;
+  width: 320px;
+  background: #fff;
+  color: #000;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  z-index: 1000;
+  padding: 15px;
+}
+
+/* Cuando se agrega la clase .abierto, se muestra */
+.panel-mini-carrito.abierto {
+  display: block;
+}
+
+.items-mini-carrito {
+  max-height: 300px;
+  overflow-y: auto;
+  margin-bottom: 15px;
+}
+
+.item-mini {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.item-mini-color {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid #000;
+}
+
+.item-mini-info {
+  flex: 1;
+  font-size: 13px;
+}
+
+.item-mini-precio {
+  font-weight: bold;
+  font-size: 13px;
+}
+
+.footer-mini-carrito button {
+  width: 100%;
+  background: #000;
+  color: #fff;
+  border: none;
+  padding: 10px;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  text-transform: uppercase;
+  font-size: 12px;
+}
+
+.footer-mini-carrito button:hover {
+  background: #FF2E5B;
+}

@@ -10,13 +10,26 @@
 
   <header>
     <div class="header-top">
-      <div class="logo">PROBADOR AR</div>
+            <a href="/" class="logo" style="text-decoration: none; color: inherit;">PROBADOR AR</a>
       <nav class="header-nav">
-        <a href="/rubor.html">Rubor</a>
-        <a href="/labial.html">Labial</a>
-        <a href="/sombra.html">Sombra</a>
-        <a href="/ar/" class="destacado">Probar en AR</a>
-      </nav>
+  <a href="/rubor.html">Rubor</a>
+  <a href="/labial.html">Labial</a>
+  <a href="/sombra.html">Sombra</a>
+ <div class="mini-carrito-wrapper">
+  <button id="btn-carrito-menu" class="btn-carrito-menu">
+    🛒 Carrito (<span id="contador-carrito">0</span>)
+  </button>
+  
+  <div id="panel-mini-carrito" class="panel-mini-carrito">
+    <div id="items-mini-carrito" class="items-mini-carrito">
+    </div>
+    <div class="footer-mini-carrito">
+      <button id="btn-ir-carrito">Ver Carrito Completo</button>
+    </div>
+  </div>
+</div>
+  <a href="/ar/" class="destacado">Probar en AR</a>
+</nav>
     </div>
   </header>
 
@@ -26,5 +39,6 @@
   <footer>Probador AR · Demo educativa</footer>
 
   <script type="module" src="/src/home.js"></script>
+  <script type="module" src="/src/ui-carrito.js"></script>
 </body>
 </html>

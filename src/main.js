@@ -1,58 +1,38 @@
 import { OpenMakeup } from 'open-makeup-sdk';
+import { productos, buscarProducto } from './productos.js';
 import './style.css';
 
-// Elementos de la UI
+// 1. Referencias al DOM
 const el = {
   video:      document.getElementById('camera'),
   canvas:     document.getElementById('output'),
-  categoria:  document.getElementById('selector-categoria'),
+  selCat:     document.getElementById('selector-categoria'),
+  selProd:    document.getElementById('selector-producto'),
   producto:   document.getElementById('texto-producto'),
-  precio:     document.getElementById('texto-precio'),
   panel:      document.getElementById('panel-control'),
   info:       document.getElementById('info-panel'),
   btnFloat:   document.getElementById('btn-flotante'),
-  paletaBox:  document.getElementById('bloque-paleta'),
-  intBox:     document.getElementById('bloque-intensidad'),
   paleta:     document.getElementById('paleta-colores'),
   sliderInt:  document.getElementById('sl-intensidad'),
   valInt:     document.getElementById('val-int'),
   loader:     document.getElementById('indicador-carga'),
 };
 
-// Leer parámetros de la URL (vienen del botón "Probar en AR")
-const params = new URLSearchParams(window.location.search);
-const tipoURL = params.get('tipo');
-const colorURL = params.get('color');
-
-const categoriaInicial = tipoURL || 'labial';
-const colorInicial = colorURL ? decodeURIComponent(colorURL) : null;
-
-
-// Colores disponibles por categoría
-const PALETAS = {
-  rubor:  ['#FFB6C1', '#FF6B9D', '#E91E63', '#C2185B', '#FF8A80', '#D2691E'],
-  sombra: ['#9B6BFF', '#6B9BFF', '#4CAF50', '#FFC107', '#795548', '#212121', '#E91E63'],
-  labial: ['#FF5252', '#E91E63', '#C2185B', '#8E24AA', '#B71D1D', '#FF8A80', '#6D4C41'],
-};
-
-// El SDK usa estos nombres internamente
-const TIPOS_SDK = {
-  labial: 'lipstick',
-  sombra: 'eyeshadow',
-  rubor:  'blush',
-};
-
+const TIPOS_SDK = { rubor: 'blush', sombra: 'eyeshadow', labial: 'lipstick' };
 let categoria = 'labial';
 let colorActual = '#E91E63';
 let makeup = null;
 
+// 2. Leer la URL (por si venimos de un producto específico)
+const params = new URLSearchParams(window.location.search);
+const tipoURL = params.get('tipo');
+const idURL = params.get('id');
 
+// 3. Inicialización
 async function iniciar() {
   try {
     el.loader.textContent = 'Pidiendo permiso de cámara...';
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: 'user' }
-    });
+    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
     el.video.srcObject = stream;
     await el.video.play();
 
@@ -66,99 +46,138 @@ async function iniciar() {
     await makeup.init();
 
     el.loader.style.display = 'none';
-    cargarCategoria(categoriaInicial);
-    if (colorInicial) {
-  colorActual = colorInicial;
-  aplicar(categoriaInicial, colorInicial);
-}
+    
+    // Iniciamos los menús (vacíos al principio)
+    prepararMenus();
+
+    // Si venimos de la tienda con un producto, lo cargamos.
+    // Si no, cargamos el primero por defecto (Labial Mate).
+    if (tipoURL && idURL && buscarProducto(tipoURL, idURL)) {
+      categoria = tipoURL;
+      el.selCat.value = tipoURL; // Setea el menú de categorías
+      llenarMenuProductos(tipoURL); // Llena el menú de productos
+      el.selProd.value = idURL; // Setea el producto específico
+      
+      const prod = buscarProducto(tipoURL, idURL);
+      cargarProductoEnAR(prod); // Aplica los colores
+    } else {
+      el.selCat.value = 'labial';
+      llenarMenuProductos('labial');
+      el.selProd.value = 'l1';
+      cargarProductoEnAR(buscarProducto('labial', 'l1'));
+    }
+
   } catch (err) {
     console.error(err);
     el.loader.textContent = 'Error: ' + err.message;
   }
 }
 
+// 4. Lógica de los Menús
+function prepararMenus() {
+  // Evento al cambiar la categoría
+  el.selCat.addEventListener('change', (e) => {
+    const cat = e.target.value;
+    if (cat) {
+      llenarMenuProductos(cat);
+      // Al cambiar de categoría, cargamos el primer producto de esa categoría
+      const primerProd = productos[cat][0];
+      el.selProd.value = primerProd.id;
+      categoria = cat;
+      cargarProductoEnAR(primerProd);
+    } else {
+      // Si eligen la opción vacía
+      el.selProd.innerHTML = '<option value="">Seleccioná un producto</option>';
+      el.selProd.disabled = true;
+      makeup?.clearAll?.();
+    }
+  });
 
-function cargarCategoria(cat) {
-  categoria = cat;
-
-  // Sin categoría: apagar todo y salir
-  if (cat === 'ninguno') {
-    makeup?.clearAll?.();
-    el.producto.textContent = 'Sin maquillaje';
-    el.precio.textContent = '';
-    el.paletaBox.style.display = 'none';
-    el.intBox.style.display = 'none';
-    return;
-  }
-
-  makeup?.clearAll?.();
-
-  el.paletaBox.style.display = 'block';
-  el.intBox.style.display = 'block';
-  el.producto.textContent = cat[0].toUpperCase() + cat.slice(1);
-  el.precio.textContent = '';
-
-  pintarPaleta(cat);
-  colorActual = PALETAS[cat][0];
-  aplicar(cat, colorActual);
-}
-
-
-function aplicar(cat, color) {
-  const tipo = TIPOS_SDK[cat];
-  if (!tipo || !makeup) return;
-
-  makeup.apply(tipo, {
-    color,
-    opacity: parseFloat(el.sliderInt.value),
-    finish: 'glossy',
+  // Evento al cambiar el producto
+  el.selProd.addEventListener('change', (e) => {
+    const id = e.target.value;
+    const cat = el.selCat.value;
+    if (id && cat) {
+      const prod = buscarProducto(cat, id);
+      categoria = cat;
+      cargarProductoEnAR(prod);
+    }
   });
 }
 
+function llenarMenuProductos(cat) {
+  el.selProd.innerHTML = '';
+  el.selProd.disabled = false;
 
-function pintarPaleta(cat) {
+  productos[cat].forEach(prod => {
+    const opt = document.createElement('option');
+    opt.value = prod.id;
+    opt.textContent = prod.nombre;
+    el.selProd.appendChild(opt);
+  });
+}
+
+// 5. Cargar colores del producto
+function cargarProductoEnAR(prod) {
+  makeup?.clearAll?.();
+  el.producto.textContent = prod.nombre;
+  
   el.paleta.innerHTML = '';
-
-  PALETAS[cat].forEach((hex, i) => {
+  prod.tonos.forEach((tono, i) => {
     const sw = document.createElement('div');
     sw.className = 'color-swatch';
-    sw.style.background = hex;
+    sw.style.background = tono.color;
     if (i === 0) sw.classList.add('activo');
 
     sw.addEventListener('click', () => {
-      colorActual = hex;
-      aplicar(cat, hex);
+      colorActual = tono.color;
+      aplicar(categoria, tono.color);
       el.paleta.querySelector('.activo')?.classList.remove('activo');
       sw.classList.add('activo');
     });
 
     el.paleta.appendChild(sw);
   });
+
+  if (prod.tonos.length > 0) {
+    colorActual = prod.tonos[0].color;
+    aplicar(categoria, colorActual);
+  }
 }
 
+// 6. Aplicar al SDK
+function aplicar(cat, color) {
+  const tipo = TIPOS_SDK[cat];
+  if (!tipo || !makeup) return;
 
-// Cambiar de categoría
-el.categoria.addEventListener('change', (e) => cargarCategoria(e.target.value));
+  makeup.apply(tipo, {
+    color: color,
+    opacity: parseFloat(el.sliderInt.value),
+    finish: 'glossy',
+  });
+}
 
-// Slider de intensidad
-el.sliderInt.addEventListener('input', (e) => {
-  el.valInt.textContent = parseFloat(e.target.value).toFixed(2);
-});
-el.sliderInt.addEventListener('change', () => {
-  if (categoria !== 'ninguno') aplicar(categoria, colorActual);
-});
+// 7. Eventos (Slider y panel)
+// Función para forzar el redimensionamiento real del canvas
+function redimensionarCanvas() {
+  const canvas = document.getElementById('output');
+  if (!canvas) return;
+  
+  // Le decimos al canvas que su tamaño real (en píxeles) sea igual al de la pantalla
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
 
-// Mostrar / ocultar panel
 document.getElementById('btn-minimizar').addEventListener('click', () => {
   el.panel.classList.add('oculto');
   el.info.classList.add('oculto');
   el.btnFloat.classList.add('visible');
 });
+
 el.btnFloat.addEventListener('click', () => {
   el.panel.classList.remove('oculto');
   el.info.classList.remove('oculto');
   el.btnFloat.classList.remove('visible');
 });
-
 
 window.addEventListener('load', iniciar);

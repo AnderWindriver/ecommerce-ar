@@ -21,14 +21,24 @@
     <button class="btn-minimizar" id="btn-minimizar">▼ Ocultar panel ▼</button>
 
     <div class="contenido-panel">
-      <label for="selector-categoria">Categoría:</label>
-      <select id="selector-categoria">
-        <option value="ninguno">Ninguno</option>
-        <option value="rubor">Rubor</option>
-        <option value="sombra">Sombra de ojos</option>
-        <option value="labial" selected>Labial</option>
-      </select>
+          <!-- Selector de Categoría -->
+      <div>
+        <label for="selector-categoria">Categoría:</label>
+        <select id="selector-categoria">
+          <option value="">-- Elegí categoría --</option>
+          <option value="rubor">Rubor</option>
+          <option value="labial">Labial</option>
+          <option value="sombra">Sombra</option>
+        </select>
+      </div>
 
+      <!-- Selector de Producto -->
+      <div>
+        <label for="selector-producto">Elegir Producto:</label>
+        <select id="selector-producto" disabled>
+          <option value="">Primero elegí una categoría</option>
+        </select>
+      </div>
       <div id="bloque-paleta">
         <label>Color:</label>
         <div class="paleta-colores" id="paleta-colores"></div>
