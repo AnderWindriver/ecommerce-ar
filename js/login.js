@@ -1,3 +1,5 @@
+import dotenv from 'dotenv';
+dotenv.config({ path: '.env.local' });
 import { createClient } from '@supabase/supabase-js'
 
 // Variables de entorno de Supabase
@@ -31,4 +33,22 @@ export async function iniciarSesion(email, password) {
 export async function cerrarSesion() {
   const { error } = await supabase.auth.signOut()
   return { error }
+}
+
+// Solicitar enlace de recuperación de contraseña vía email
+export async function solicitarRecuperacion(email) {
+  const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: 'http://localhost:3000/restablecer-password', // URL de tu frontend a la que llegará el usuario
+  });
+
+  return { data, error };
+}
+
+// Actualizar la clave (se llama estando en la sesión de restablecimiento)
+export async function actualizarPassword(nuevaPassword) {
+  const { data, error } = await supabase.auth.updateUser({
+    password: nuevaPassword,
+  });
+
+  return { data, error };
 }
