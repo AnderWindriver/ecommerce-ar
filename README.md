@@ -1,16 +1,17 @@
 # E-commerce AR
+
 ---
 
-##  Stack tecnológico
+## Stack tecnológico
 
-| Capa | Tecnología |
-|---|---|
-| Frontend | Next.js + React |
-| AR |  |
-| Backend | NestJS + Node.js |
+| Capa          | Tecnología            |
+| ------------- | --------------------- |
+| Frontend      | Next.js + React       |
+| AR            |                       |
+| Backend       | NestJS + Node.js      |
 | Base de datos | Supabase (PostgreSQL) |
-| Auth | Supabase Auth |
-| Deploy | Vercel + Supabase |
+| Auth          | Supabase Auth         |
+| Deploy        | Vercel + Supabase     |
 
 ---
 
@@ -85,12 +86,12 @@ git push -u origin feature/HU-XX-descripcion
 
 ### Convenciones
 
-| Elemento | Formato | Ejemplo |
-|---|---|---|
-| Rama feature | `feature/HU-XX-descripcion` | `feature/HU-12-catalogo-productos` |
-| Rama fix | `fix/HU-XX-descripcion` | `fix/HU-17-login-error` |
-| Commit | `HU-XX: mensaje` | `HU-15: agregar validación de email` |
-| PR title | `HU-XX: Título de la HU` | `HU-15: Registro con email y contraseña` |
+| Elemento     | Formato                     | Ejemplo                                  |
+| ------------ | --------------------------- | ---------------------------------------- |
+| Rama feature | `feature/HU-XX-descripcion` | `feature/HU-12-catalogo-productos`       |
+| Rama fix     | `fix/HU-XX-descripcion`     | `fix/HU-17-login-error`                  |
+| Commit       | `HU-XX: mensaje`            | `HU-15: agregar validación de email`     |
+| PR title     | `HU-XX: Título de la HU`    | `HU-15: Registro con email y contraseña` |
 
 ---
 
@@ -113,11 +114,13 @@ ecommerce-ar/
 ## 🧪 Pruebas
 
 ### Probar la AR en desktop
+
 1. `npm run dev`
 2. Abrir `http://localhost:3000`
 3. Click en "Probar en AR" en cualquier producto.
 
 ### Probar la AR en celular
+
 1. Levantar el servidor con `ngrok`:
    ```bash
    npx ngrok http 3000

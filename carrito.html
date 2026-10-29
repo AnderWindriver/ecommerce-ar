@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Carrito - Probador AR</title>
+    <link rel="stylesheet" href="/src/tienda.css" />
+  </head>
+  <body>
+    <div id="app-header"></div>
+    <h1 class="titulo-seccion">Tu Carrito</h1>
+
+    <div
+      id="lista-carrito"
+      style="max-width: 800px; margin: 0 auto; padding: 20px"
+    ></div>
+    <div
+      id="total-carrito"
+      style="
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        text-align: right;
+        font-size: 24px;
+        font-weight: bold;
+      "
+    ></div>
+
+    <footer>Probador AR · Demo educativa</footer>
+
+    <script type="module" src="/src/header.js"></script>
+    <script type="module" src="/src/ui-carrito.js"></script>
+    <script type="module" src="/src/carrito-vista.js"></script>
+  </body>
+</html>

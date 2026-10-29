@@ -1,0 +1,36 @@
+{
+  "name": "ecommerce-ar",
+  "version": "1.0.0",
+  "description": "E-commerce con try-on AR — Proyecto académico",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AnderWindriver/ecommerce-ar.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/AnderWindriver/ecommerce-ar/issues"
+  },
+  "homepage": "https://github.com/AnderWindriver/ecommerce-ar#readme",
+  "dependencies": {
+    "@mediapipe/camera_utils": "^0.3.1675466862",
+    "@mediapipe/face_mesh": "^0.4.1633559619",
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.118.0",
+    "dotenv": "^18.0.8",
+    "open-makeup-sdk": "^0.1.0",
+    "three": "^0.184.0"
+  },
+  "devDependencies": {
+    "vite": "^8.3.5"
+  }
+}

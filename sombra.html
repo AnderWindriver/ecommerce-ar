@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sombra - Probador AR</title>
+  <link rel="stylesheet" href="/src/tienda.css">
+</head>
+<body>
+
+  <div id="app-header"></div>
+
+  <h1 class="titulo-seccion">Sombra</h1>
+  <div class="grilla" id="grilla"></div>
+
+  <footer>Probador AR · Demo educativa</footer>
+
+  <script type="module" src="/src/header.js"></script>
+  <script type="module" src="/src/ui-carrito.js"></script>
+  <script type="module">
+    import { cargarLista } from '/src/lista.js';
+    cargarLista('sombra');
+  </script>
+</body>
+</body>
+</html>
