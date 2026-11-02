@@ -13,24 +13,29 @@ const el = {
   panel: document.getElementById('panel-control'),
   info: document.getElementById('info-panel'),
   btnFloat: document.getElementById('btn-flotante'),
+  btnLimpiar: document.getElementById('btn-limpiar'),
   paleta: document.getElementById('paleta-colores'),
-  sliderInt: document.getElementById('sl-intensidad'),
-  valInt: document.getElementById('val-int'),
   loader: document.getElementById('indicador-carga'),
 };
 
 const TIPOS_SDK = { rubor: 'blush', sombra: 'eyeshadow', labial: 'lipstick' };
 let categoria = 'labial';
-let colorActual = '#E91E63';
 let makeup = null;
-let productosDeAPI = []; // Guarda los productos de la API al inicio
+let productosDeAPI = [];
+
+// ACA GUARDAMOS EL ESTADO DE LO QUE ESTA PUESTO
+let capasActivas = {
+  rubor: null,
+  sombra: null,
+  labial: null
+};
 
 // 2. Leer la URL
 const params = new URLSearchParams(window.location.search);
 const tipoURL = params.get('tipo');
 const idURL = params.get('id');
 
-// 3. Inicialización
+// 3. Inicializacion
 async function iniciar() {
   try {
     el.loader.textContent = 'Pidiendo permiso de cámara...';
@@ -47,7 +52,6 @@ async function iniciar() {
     });
     await makeup.init();
 
-    // Traemos los productos de la API antes de armar los menús
     try {
       productosDeAPI = await obtenerProductosAPI();
     } catch (error) {
@@ -57,10 +61,8 @@ async function iniciar() {
     el.loader.style.display = 'none';
     prepararMenus();
 
-    // 4. Lógica de arranque (Local vs API)
     if (tipoURL && idURL) {
       let prodEncontrado = null;
-
       if (idURL.startsWith('api-')) {
         prodEncontrado = productosDeAPI.find(p => p.id === idURL);
       } else {
@@ -93,7 +95,7 @@ function cargarDefault() {
   cargarProductoEnAR(buscarProducto('labial', 'l1'));
 }
 
-// 5. Lógica de los Menús
+// 4. Menús
 function prepararMenus() {
   el.selCat.addEventListener('change', (e) => {
     const cat = e.target.value;
@@ -101,7 +103,6 @@ function prepararMenus() {
       llenarMenuProductos(cat);
       categoria = cat;
       
-      // Al cambiar de categoría, seleccionamos y cargamos el primer producto de la lista (sea local o API)
       const primerOptionValue = el.selProd.options[0]?.value;
       if (primerOptionValue) {
         el.selProd.value = primerOptionValue;
@@ -132,13 +133,23 @@ function prepararMenus() {
       cargarProductoEnAR(prod);
     }
   });
+
+  // Boton para borrar todo el maquillaje
+  if (el.btnLimpiar) {
+    el.btnLimpiar.addEventListener('click', () => {
+      makeup?.clearAll?.();
+      capasActivas.rubor = null;
+      capasActivas.sombra = null;
+      capasActivas.labial = null;
+      el.paleta.innerHTML = ''; // Limpiamos los circulitos para que se vea que se borro
+    });
+  }
 }
 
 function llenarMenuProductos(cat) {
   el.selProd.innerHTML = '';
   el.selProd.disabled = false;
 
-  // 1. Agregamos los locales representados con una casita <3
   if (productos[cat]) {
     productos[cat].forEach(prod => {
       const opt = document.createElement('option');
@@ -148,7 +159,6 @@ function llenarMenuProductos(cat) {
     });
   }
 
-  // 2. Agregamos los de la API representados con un mundito
   const apiFiltrados = productosDeAPI.filter(p => p.tipo === cat);
   apiFiltrados.forEach(prod => {
     const opt = document.createElement('option');
@@ -158,21 +168,25 @@ function llenarMenuProductos(cat) {
   });
 }
 
-// 6. Cargar colores del producto
+// 5. Dibujar paleta de colores
 function cargarProductoEnAR(prod) {
-  makeup?.clearAll?.();
   el.producto.textContent = prod.nombre;
-
   el.paleta.innerHTML = '';
+  
   prod.tonos.forEach((tono, i) => {
     const sw = document.createElement('div');
     sw.className = 'color-swatch';
     sw.style.background = tono.color;
-    if (i === 0) sw.classList.add('activo');
+    
+    // Marco el tono activo
+    if (capasActivas[categoria] === tono.color) {
+      sw.classList.add('activo');
+    }
 
     sw.addEventListener('click', () => {
-      colorActual = tono.color;
-      aplicar(categoria, tono.color);
+      aplicarCapa(categoria, tono.color);
+      
+      // Actualizamos los bordes visuales
       el.paleta.querySelector('.activo')?.classList.remove('activo');
       sw.classList.add('activo');
     });
@@ -180,36 +194,40 @@ function cargarProductoEnAR(prod) {
     el.paleta.appendChild(sw);
   });
 
-  if (prod.tonos.length > 0) {
-    colorActual = prod.tonos[0].color;
-    aplicar(categoria, colorActual);
+  // Si no hay ninguna capa activa en esta categorIa, aplicamos la primera por defecto
+  if (!capasActivas[categoria] && prod.tonos.length > 0) {
+    aplicarCapa(categoria, prod.tonos[0].color);
+    el.paleta.querySelector('.color-swatch')?.classList.add('activo');
   }
 }
 
-// 7. Aplicar al SDK
-function aplicar(cat, color) {
+// 6. CAPAS
+function aplicarCapa(cat, color) {
   const tipo = TIPOS_SDK[cat];
   if (!tipo || !makeup) return;
 
-  let intensidad = parseFloat(el.sliderInt.value);
-  if (intensidad < 0.85) intensidad = 0.85; 
+  // 1. Guardamos el color nuevo en la memoria
+  capasActivas[cat] = color;
 
-  makeup.apply(tipo, {
-    color: color,
-    opacity: intensidad,
-    finish: 'matte',
-  });
+  // 2. Borramos TODO el maquillaje de la cara
+  makeup.clearAll();
+
+  // 3. Volvemos a pintar las capas que SÍ queremos conservar
+  for (const categoriaGuardada in capasActivas) {
+    const colorGuardado = capasActivas[categoriaGuardada];
+    const tipoGuardado = TIPOS_SDK[categoriaGuardada];
+    
+    if (colorGuardado && tipoGuardado) {
+      makeup.apply(tipoGuardado, {
+        color: colorGuardado,
+        opacity: 1.0,
+        finish: 'matte',
+      });
+    }
+  }
 }
 
-// 8. Eventos (Slider y panel)
-el.sliderInt.addEventListener('input', (e) => {
-  el.valInt.textContent = parseFloat(e.target.value).toFixed(2);
-});
-
-el.sliderInt.addEventListener('change', () => {
-  aplicar(categoria, colorActual);
-});
-
+// 7. Eventos generales
 document.getElementById('btn-minimizar').addEventListener('click', () => {
   el.panel.classList.add('oculto');
   el.info.classList.add('oculto');

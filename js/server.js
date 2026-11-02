@@ -1,3 +1,4 @@
+//correr con : node js/server.js
 import express from 'express';
 import cors from 'cors';
 
