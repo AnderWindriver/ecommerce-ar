@@ -1,0 +1,45 @@
+﻿import { createClient } from '@supabase/supabase-js'
+
+// Vite expone al frontend únicamente las variables VITE_*
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY
+
+if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+  throw new Error(
+    'Falta configurar VITE_SUPABASE_URL o VITE_SUPABASE_ANON_KEY en el archivo .env'
+  )
+}
+
+export const supabase = createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+)
+
+// SCRUM-15: Registro de usuario
+export async function registrarUsuario(email, password, nombre) {
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: { nombre }
+    }
+  })
+
+  return { data, error }
+}
+
+// SCRUM-17: Inicio de sesión
+export async function iniciarSesion(email, password) {
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password
+  })
+
+  return { data, error }
+}
+
+// SCRUM-17: Cierre de sesión
+export async function cerrarSesion() {
+  const { error } = await supabase.auth.signOut()
+  return { error }
+}
