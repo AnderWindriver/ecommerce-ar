@@ -1,29 +1,31 @@
 import { OpenMakeup } from 'open-makeup-sdk';
 import { productos, buscarProducto } from './productos.js';
+import { obtenerProductosAPI } from './api.js';
 import './style.css';
 
 // 1. Referencias al DOM
 const el = {
-  video:      document.getElementById('camera'),
-  canvas:     document.getElementById('output'),
-  selCat:     document.getElementById('selector-categoria'),
-  selProd:    document.getElementById('selector-producto'),
-  producto:   document.getElementById('texto-producto'),
-  panel:      document.getElementById('panel-control'),
-  info:       document.getElementById('info-panel'),
-  btnFloat:   document.getElementById('btn-flotante'),
-  paleta:     document.getElementById('paleta-colores'),
-  sliderInt:  document.getElementById('sl-intensidad'),
-  valInt:     document.getElementById('val-int'),
-  loader:     document.getElementById('indicador-carga'),
+  video: document.getElementById('camera'),
+  canvas: document.getElementById('output'),
+  selCat: document.getElementById('selector-categoria'),
+  selProd: document.getElementById('selector-producto'),
+  producto: document.getElementById('texto-producto'),
+  panel: document.getElementById('panel-control'),
+  info: document.getElementById('info-panel'),
+  btnFloat: document.getElementById('btn-flotante'),
+  paleta: document.getElementById('paleta-colores'),
+  sliderInt: document.getElementById('sl-intensidad'),
+  valInt: document.getElementById('val-int'),
+  loader: document.getElementById('indicador-carga'),
 };
 
 const TIPOS_SDK = { rubor: 'blush', sombra: 'eyeshadow', labial: 'lipstick' };
 let categoria = 'labial';
 let colorActual = '#E91E63';
 let makeup = null;
+let productosDeAPI = []; // Guarda los productos de la API al inicio
 
-// 2. Leer la URL (por si venimos de un producto específico)
+// 2. Leer la URL
 const params = new URLSearchParams(window.location.search);
 const tipoURL = params.get('tipo');
 const idURL = params.get('id');
@@ -45,26 +47,37 @@ async function iniciar() {
     });
     await makeup.init();
 
+    // Traemos los productos de la API antes de armar los menús
+    try {
+      productosDeAPI = await obtenerProductosAPI();
+    } catch (error) {
+      console.error('No se pudieron cargar los productos de la API');
+    }
+
     el.loader.style.display = 'none';
-    
-    // Iniciamos los menús (vacíos al principio)
     prepararMenus();
 
-    // Si venimos de la tienda con un producto, lo cargamos.
-    // Si no, cargamos el primero por defecto (Labial Mate).
-    if (tipoURL && idURL && buscarProducto(tipoURL, idURL)) {
-      categoria = tipoURL;
-      el.selCat.value = tipoURL; // Setea el menú de categorías
-      llenarMenuProductos(tipoURL); // Llena el menú de productos
-      el.selProd.value = idURL; // Setea el producto específico
-      
-      const prod = buscarProducto(tipoURL, idURL);
-      cargarProductoEnAR(prod); // Aplica los colores
+    // 4. Lógica de arranque (Local vs API)
+    if (tipoURL && idURL) {
+      let prodEncontrado = null;
+
+      if (idURL.startsWith('api-')) {
+        prodEncontrado = productosDeAPI.find(p => p.id === idURL);
+      } else {
+        prodEncontrado = buscarProducto(tipoURL, idURL);
+      }
+
+      if (prodEncontrado) {
+        categoria = tipoURL;
+        el.selCat.value = tipoURL;
+        llenarMenuProductos(tipoURL);
+        el.selProd.value = idURL;
+        cargarProductoEnAR(prodEncontrado);
+      } else {
+        cargarDefault();
+      }
     } else {
-      el.selCat.value = 'labial';
-      llenarMenuProductos('labial');
-      el.selProd.value = 'l1';
-      cargarProductoEnAR(buscarProducto('labial', 'l1'));
+      cargarDefault();
     }
 
   } catch (err) {
@@ -73,32 +86,48 @@ async function iniciar() {
   }
 }
 
-// 4. Lógica de los Menús
+function cargarDefault() {
+  el.selCat.value = 'labial';
+  llenarMenuProductos('labial');
+  el.selProd.value = 'l1';
+  cargarProductoEnAR(buscarProducto('labial', 'l1'));
+}
+
+// 5. Lógica de los Menús
 function prepararMenus() {
-  // Evento al cambiar la categoría
   el.selCat.addEventListener('change', (e) => {
     const cat = e.target.value;
-    if (cat) {
+    if (cat && productos[cat]) {
       llenarMenuProductos(cat);
-      // Al cambiar de categoría, cargamos el primer producto de esa categoría
-      const primerProd = productos[cat][0];
-      el.selProd.value = primerProd.id;
       categoria = cat;
-      cargarProductoEnAR(primerProd);
-    } else {
-      // Si eligen la opción vacía
-      el.selProd.innerHTML = '<option value="">Seleccioná un producto</option>';
-      el.selProd.disabled = true;
-      makeup?.clearAll?.();
+      
+      // Al cambiar de categoría, seleccionamos y cargamos el primer producto de la lista (sea local o API)
+      const primerOptionValue = el.selProd.options[0]?.value;
+      if (primerOptionValue) {
+        el.selProd.value = primerOptionValue;
+        const esAPI = primerOptionValue.startsWith('api-');
+        const prod = esAPI 
+          ? productosDeAPI.find(p => p.id === primerOptionValue)
+          : buscarProducto(cat, primerOptionValue);
+        
+        if (prod) cargarProductoEnAR(prod);
+      }
     }
   });
 
-  // Evento al cambiar el producto
   el.selProd.addEventListener('change', (e) => {
     const id = e.target.value;
     const cat = el.selCat.value;
-    if (id && cat) {
-      const prod = buscarProducto(cat, id);
+    if (!id || !cat) return;
+
+    let prod = null;
+    if (id.startsWith('api-')) {
+      prod = productosDeAPI.find(p => p.id === id);
+    } else {
+      prod = buscarProducto(cat, id);
+    }
+
+    if (prod) {
       categoria = cat;
       cargarProductoEnAR(prod);
     }
@@ -109,19 +138,31 @@ function llenarMenuProductos(cat) {
   el.selProd.innerHTML = '';
   el.selProd.disabled = false;
 
-  productos[cat].forEach(prod => {
+  // 1. Agregamos los locales representados con una casita <3
+  if (productos[cat]) {
+    productos[cat].forEach(prod => {
+      const opt = document.createElement('option');
+      opt.value = prod.id;
+      opt.textContent = `🏠 ${prod.nombre}`; 
+      el.selProd.appendChild(opt);
+    });
+  }
+
+  // 2. Agregamos los de la API representados con un mundito
+  const apiFiltrados = productosDeAPI.filter(p => p.tipo === cat);
+  apiFiltrados.forEach(prod => {
     const opt = document.createElement('option');
     opt.value = prod.id;
-    opt.textContent = prod.nombre;
+    opt.textContent = `🌐 ${prod.nombre}`;
     el.selProd.appendChild(opt);
   });
 }
 
-// 5. Cargar colores del producto
+// 6. Cargar colores del producto
 function cargarProductoEnAR(prod) {
   makeup?.clearAll?.();
   el.producto.textContent = prod.nombre;
-  
+
   el.paleta.innerHTML = '';
   prod.tonos.forEach((tono, i) => {
     const sw = document.createElement('div');
@@ -145,28 +186,29 @@ function cargarProductoEnAR(prod) {
   }
 }
 
-// 6. Aplicar al SDK
+// 7. Aplicar al SDK
 function aplicar(cat, color) {
   const tipo = TIPOS_SDK[cat];
   if (!tipo || !makeup) return;
 
+  let intensidad = parseFloat(el.sliderInt.value);
+  if (intensidad < 0.85) intensidad = 0.85; 
+
   makeup.apply(tipo, {
     color: color,
-    opacity: parseFloat(el.sliderInt.value),
-    finish: 'glossy',
+    opacity: intensidad,
+    finish: 'matte',
   });
 }
 
-// 7. Eventos (Slider y panel)
-// Función para forzar el redimensionamiento real del canvas
-function redimensionarCanvas() {
-  const canvas = document.getElementById('output');
-  if (!canvas) return;
-  
-  // Le decimos al canvas que su tamaño real (en píxeles) sea igual al de la pantalla
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-}
+// 8. Eventos (Slider y panel)
+el.sliderInt.addEventListener('input', (e) => {
+  el.valInt.textContent = parseFloat(e.target.value).toFixed(2);
+});
+
+el.sliderInt.addEventListener('change', () => {
+  aplicar(categoria, colorActual);
+});
 
 document.getElementById('btn-minimizar').addEventListener('click', () => {
   el.panel.classList.add('oculto');
