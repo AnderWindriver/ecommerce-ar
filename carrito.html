@@ -1,47 +1,34 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <title>Carrito - Probador AR</title>
-  <link rel="stylesheet" href="/src/tienda.css">
-</head>
-<body>
-  <header>
-    <div class="header-top">
-      <a href="/" class="logo">PROBADOR AR</a>
-      <nav class="header-nav">
-  <a href="/rubor.html">Rubor</a>
-  <a href="/labial.html">Labial</a>
-  <a href="/sombra.html">Sombra</a>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Carrito - Probador AR</title>
+    <link rel="stylesheet" href="/src/tienda.css" />
+  </head>
+  <body>
+    <div id="app-header"></div>
+    <h1 class="titulo-seccion">Tu Carrito</h1>
 
- <div class="mini-carrito-wrapper">
-  <button id="btn-carrito-menu" class="btn-carrito-menu">
-    🛒 Carrito (<span id="contador-carrito">0</span>)
-  </button>
-  
-  <div id="panel-mini-carrito" class="panel-mini-carrito">
-    <div id="items-mini-carrito" class="items-mini-carrito">
-      <!-- JS inyecta los productos -->
-    </div>
-    <div class="footer-mini-carrito">
-      <button id="btn-ir-carrito">Ver Carrito Completo</button>
-    </div>
-  </div>
-</div>
+    <div
+      id="lista-carrito"
+      style="max-width: 800px; margin: 0 auto; padding: 20px"
+    ></div>
+    <div
+      id="total-carrito"
+      style="
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        text-align: right;
+        font-size: 24px;
+        font-weight: bold;
+      "
+    ></div>
 
-  <a href="/ar/" class="destacado">Probar en AR</a>
-</nav>
-    </div>
-  </header>
+    <footer>Probador AR · Demo educativa</footer>
 
-  <h1 class="titulo-seccion">Tu Carrito</h1>
-  
-  <div id="lista-carrito" style="max-width: 800px; margin: 0 auto; padding: 20px;"></div>
-  <div id="total-carrito" style="max-width: 800px; margin: 0 auto; padding: 20px; text-align: right; font-size: 24px; font-weight: bold;"></div>
-
-  <footer>Probador AR · Demo educativa</footer>
-  
-  <script type="module" src="/src/ui-carrito.js"></script>
-  <script type="module" src="/src/carrito-vista.js"></script>
-</body>
+    <script type="module" src="/src/header.js"></script>
+    <script type="module" src="/src/ui-carrito.js"></script>
+    <script type="module" src="/src/carrito-vista.js"></script>
+  </body>
 </html>

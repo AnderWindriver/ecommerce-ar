@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Iniciá sesión o creá tu cuenta en Probador AR."
+    />
+    <title>Mi cuenta | Probador AR</title>
+    <link rel="stylesheet" href="/src/tienda.css" />
+
+    <style>
+      .cuenta-contenedor {
+        width: min(92%, 440px);
+        margin: 48px auto;
+        padding: 28px;
+        box-sizing: border-box;
+        border-radius: 16px;
+        background: #fff;
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+      }
+
+      .cuenta-contenedor h1,
+      .cuenta-subtitulo {
+        text-align: center;
+      }
+
+      .cuenta-pestanas {
+        display: flex;
+        gap: 10px;
+        margin: 24px 0;
+      }
+
+      .cuenta-pestanas button,
+      .cuenta-formulario button[type="submit"] {
+        padding: 12px;
+        border: 0;
+        border-radius: 8px;
+        cursor: pointer;
+        font: inherit;
+      }
+
+      .cuenta-pestanas button {
+        flex: 1;
+        background: #eee;
+      }
+
+      .cuenta-pestanas button[aria-selected="true"] {
+        background: #292929;
+        color: white;
+      }
+
+      .cuenta-formulario {
+        display: grid;
+        gap: 14px;
+      }
+
+      .cuenta-formulario[hidden] {
+        display: none;
+      }
+
+      .cuenta-formulario label {
+        display: grid;
+        gap: 6px;
+      }
+
+      .cuenta-formulario input {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 12px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font: inherit;
+      }
+
+      .cuenta-formulario button[type="submit"] {
+        margin-top: 6px;
+        background: #292929;
+        color: white;
+      }
+
+      .cuenta-formulario button:disabled {
+        opacity: 0.6;
+        cursor: wait;
+      }
+
+      .cuenta-mensaje {
+        padding: 12px;
+        border-radius: 8px;
+        overflow-wrap: anywhere;
+      }
+
+      .cuenta-mensaje:empty {
+        display: none;
+      }
+
+      .cuenta-volver {
+        display: block;
+        margin-top: 24px;
+        text-align: center;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="app-header"></div>
+
+    <main class="cuenta-contenedor">
+      <h1>Mi cuenta</h1>
+      <p class="cuenta-subtitulo">
+        Iniciá sesión o creá tu cuenta para continuar.
+      </p>
+
+      <div
+        class="cuenta-pestanas"
+        role="tablist"
+        aria-label="Opciones de cuenta"
+      >
+        <button
+          type="button"
+          id="pestana-login"
+          role="tab"
+          aria-selected="true"
+          aria-controls="form-login"
+        >
+          Iniciar sesión
+        </button>
+
+        <button
+          type="button"
+          id="pestana-registro"
+          role="tab"
+          aria-selected="false"
+          aria-controls="form-registro"
+        >
+          Crear cuenta
+        </button>
+      </div>
+
+      <p
+        id="cuenta-mensaje"
+        class="cuenta-mensaje"
+        role="status"
+        aria-live="polite"
+      ></p>
+
+      <form id="form-login" class="cuenta-formulario" novalidate>
+        <label for="login-email">
+          Correo electrónico
+          <input
+            id="login-email"
+            name="email"
+            type="email"
+            autocomplete="email"
+            required
+          />
+        </label>
+
+        <label for="login-password">
+          Contraseña
+          <input
+            id="login-password"
+            name="password"
+            type="password"
+            autocomplete="current-password"
+            required
+          />
+        </label>
+
+        <button type="submit">Iniciar sesión</button>
+      </form>
+
+      <form id="form-registro" class="cuenta-formulario" hidden novalidate>
+        <label for="registro-nombre">
+          Nombre
+          <input
+            id="registro-nombre"
+            name="nombre"
+            type="text"
+            autocomplete="name"
+            maxlength="100"
+            required
+          />
+        </label>
+
+        <label for="registro-email">
+          Correo electrónico
+          <input
+            id="registro-email"
+            name="email"
+            type="email"
+            autocomplete="email"
+            required
+          />
+        </label>
+
+        <label for="registro-password">
+          Contraseña
+          <input
+            id="registro-password"
+            name="password"
+            type="password"
+            autocomplete="new-password"
+            minlength="6"
+            required
+          />
+        </label>
+
+        <button type="submit">Crear cuenta</button>
+      </form>
+
+      <a class="cuenta-volver" href="/">Volver a la tienda</a>
+    </main>
+
+    <script type="module" src="/src/header.js"></script>
+    <script type="module" src="/js/login-vista.js"></script>
+  </body>
+</html>

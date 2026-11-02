@@ -1,0 +1,8 @@
+.cuenta-mensaje.error {
+  background: #fdecea;
+  color: #8a1c1c;
+}
+.cuenta-mensaje.ok {
+  background: #e8f5e9;
+  color: #1b5e20;
+}
