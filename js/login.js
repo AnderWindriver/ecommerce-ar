@@ -97,9 +97,37 @@ export async function iniciarSesion(email, password) {
     password,
   });
 
+  //Interceptamos y traemos un mensaje más amigable al usuario según el error recibido.
+  if (error) {
+    let mensajeAmigable = "No se pudo iniciar sesión. Intentá nuevamente.";
+
+    if (error.message.includes("Invalid login credentials")) {
+      mensajeAmigable = "Correo o contraseña incorrectos.";
+    } else if (error.message.includes("Email not confirmed")) {
+      mensajeAmigable = "Por favor, verificá tu bandeja de entrada y confirmá tu correo antes de iniciar sesión.";
+    }
+
+    return { data: null, error: new Error(mensajeAmigable) };
+  }
+
+  // Si el inicio de sesión fue exitoso, aseguramos que su perfil exista en 'public.usuarios'
+  if (data?.user) {
+    const usuario = data.user;
+    const { error: perfilError } = await supabase
+      .from('usuarios')
+      .upsert({
+        id_usuario: usuario.id,
+        email: usuario.email,
+        nombre: usuario.user_metadata?.nombre || 'Usuario'
+      }, { onConflict: 'id_usuario' });
+
+    if (perfilError) {
+      console.error('❌ Error al sincronizar el perfil del usuario:', perfilError.message);
+    }
+  }
+
   return { data, error };
 }
-
 // Cerrar la sesión actual.
 export async function cerrarSesion() {
   const { error } = await supabase.auth.signOut();
@@ -126,6 +154,7 @@ export function escucharCambiosSesion(callback) {
   return data.subscription;
 }
 
+//Recuperar contraseña mediante correo electrónico.
 export async function recuperarContrasena(email) {
   return await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${window.location.origin}/login.html`,

@@ -10,6 +10,11 @@ const contenedorPestanas = document.querySelector(".cuenta-pestanas");
 const subtituloCuenta = document.querySelector(".cuenta-subtitulo");
 const enlaceOlvidePass = document.querySelector("#enlace-olvide-pass");
 
+// 🧹 Limpia la URL inmediatamente si quedaron rastros de parámetros (como email o password previos)
+if (window.location.search) {
+  window.history.replaceState({}, document.title, window.location.pathname);
+}
+
 function mostrarMensaje(texto, tipo = "info") {
   if (!mensaje) return;
   mensaje.textContent = texto;
@@ -161,7 +166,7 @@ if (formularioNuevaPassword) {
 // --- SUBMIT LOGIN ---
 if (formularioLogin) {
   formularioLogin.addEventListener("submit", async (evento) => {
-    evento.preventDefault();
+    evento.preventDefault(); // 🛑 Evita el comportamiento por defecto de recarga y envío GET
 
     if (!formularioLogin.reportValidity()) return;
 
@@ -186,7 +191,7 @@ if (formularioLogin) {
     } catch (error) {
       console.error("Error al iniciar sesión:", error);
       mostrarMensaje(
-        "No se pudo iniciar sesión. Revisá el correo y la contraseña.",
+        error.message || "No se pudo iniciar sesión. Revisá el correo y la contraseña.",
         "error",
       );
     } finally {
@@ -199,7 +204,7 @@ if (formularioLogin) {
 // --- SUBMIT REGISTRO ---
 if (formularioRegistro) {
   formularioRegistro.addEventListener("submit", async (evento) => {
-    evento.preventDefault();
+    evento.preventDefault(); // 🛑 Evita el comportamiento por defecto
 
     if (!formularioRegistro.reportValidity()) return;
 
