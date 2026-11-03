@@ -104,13 +104,40 @@ function renderProducto(prod, tipo) {
   });
 
   // Lógica del botón Agregar al Carrito
-  btnAgregar.addEventListener('click', () => {
-    agregarAlCarrito(prod, tonoActual);
+// Lógica del botón Agregar al Carrito con efecto visual tipo Mercado Libre
+  btnAgregar.addEventListener('click', async () => {
+    if (btnAgregar.disabled) return; 
+
+    // 1. Bloquear el botón, cambiar texto y activar la clase de color verde
+    btnAgregar.disabled = true;
+    const textoOriginal = btnAgregar.textContent;
     btnAgregar.textContent = '¡AGREGADO!';
-    setTimeout(() => { btnAgregar.textContent = 'AGREGAR AL CARRITO'; }, 1500);
-    
-    // Avisamos al header para que actualice el contador
-    window.dispatchEvent(new Event('focus')); 
+    btnAgregar.classList.add('agregado'); // 🟢 Cambia de color al instante
+
+    try {
+      // 2. Esperamos a que la función guarde el producto en el carrito
+      await agregarAlCarrito(prod, tonoActual);
+      
+      // Avisamos al header para que actualice el contador de inmediato
+      window.dispatchEvent(new Event('focus')); 
+
+      // 3. Mantenemos el estado de éxito por 1.5 segundos y restauramos
+      setTimeout(() => { 
+        btnAgregar.textContent = textoOriginal;
+        btnAgregar.classList.remove('agregado'); // 🔄 Vuelve al color original
+        btnAgregar.disabled = false; 
+      }, 1500);
+
+    } catch (error) {
+      console.error("Error al agregar al carrito:", error);
+      btnAgregar.textContent = 'ERROR';
+      btnAgregar.classList.remove('agregado');
+      
+      setTimeout(() => { 
+        btnAgregar.textContent = textoOriginal;
+        btnAgregar.disabled = false;
+      }, 1500);
+    }
   });
 
   // Inyectamos el resultado final en la página

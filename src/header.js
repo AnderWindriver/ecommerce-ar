@@ -5,8 +5,8 @@ if (contenedor) {
     <header>
       <div class="header-top">
         <a href="/" class="logo" aria-label="Maquillainador, ir al inicio">
-  MAQUILLAINADOR
-</a>
+          MAQUILLAINADOR
+        </a>
 
         <nav class="header-nav" aria-label="Navegación principal">
           <a href="/rubor.html">Rubor</a>
@@ -48,7 +48,7 @@ if (contenedor) {
   function mostrarCuenta(sesion, cerrarSesion) {
     zonaCuenta.replaceChildren();
 
-    // Si NO hay sesión, mostramos el botón blanco limpio de "Mi cuenta"
+    // Si NO hay sesión, mostramos el enlace simple a "Mi cuenta"
     if (!sesion?.user) {
       const enlace = document.createElement("a");
       enlace.href = "/login.html";
@@ -58,30 +58,65 @@ if (contenedor) {
       return;
     }
 
+    // Si hay sesión activa, obtenemos el nombre
     const usuario = sesion.user;
     const nombre =
       usuario.user_metadata?.nombre?.trim() || usuario.email || "Mi cuenta";
 
-    const etiqueta = document.createElement("span");
-    etiqueta.textContent = nombre;
-    etiqueta.className = "usuario-conectado";
+    // --- INTEGRACIÓN DE TU MENÚ DESPLEGABLE ---
+    const wrapper = document.createElement("div");
+    wrapper.className = "perfil-dropdown-container";
 
-    const enlaceCuenta = document.createElement("a");
-    enlaceCuenta.href = "/login.html";
-    enlaceCuenta.textContent = "Mi cuenta";
+    wrapper.innerHTML = `
+      <button type="button" id="btn-perfil-toggle" class="btn-perfil-toggle" aria-expanded="false">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        <span class="nav-nombre">${nombre}</span>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </button>
+      
+      <div id="menu-desplegable" class="menu-desplegable oculto">
+        <div class="menu-header-usuario">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          <span class="texto-nombre" title="${nombre}">${nombre}</span>
+        </div>
+        
+        <button type="button" id="btn-cerrar-sesion-dropdown" class="menu-opcion menu-opcion-salir">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+          Cerrar sesión
+        </button>
+      </div>
+    `;
 
-    const botonSalir = document.createElement("button");
-    botonSalir.type = "button";
-    botonSalir.textContent = "Cerrar sesión";
-    botonSalir.className = "btn-cerrar-sesion";
+    zonaCuenta.appendChild(wrapper);
 
-    botonSalir.addEventListener("click", async () => {
-      botonSalir.disabled = true;
+    // --- EVENTOS DEL MENÚ DESPLEGABLE ---
+    const btnToggle = wrapper.querySelector("#btn-perfil-toggle");
+    const menuDesplegable = wrapper.querySelector("#menu-desplegable");
+    const btnCerrarSesion = wrapper.querySelector("#btn-cerrar-sesion-dropdown");
+
+    // Toggle para desplegar / ocultar el menú
+    btnToggle.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const estaOculto = menuDesplegable.classList.toggle("oculto");
+      btnToggle.setAttribute("aria-expanded", String(!estaOculto));
+    });
+
+    // Ocultar si el usuario hace clic fuera del menú
+    document.addEventListener("click", (e) => {
+      if (!wrapper.contains(e.target)) {
+        menuDesplegable.classList.add("oculto");
+        btnToggle.setAttribute("aria-expanded", "false");
+      }
+    });
+
+    // Acción para cerrar sesión
+    btnCerrarSesion.addEventListener("click", async () => {
+      btnCerrarSesion.disabled = true;
       const { error } = await cerrarSesion();
 
       if (error) {
         console.error("No se pudo cerrar la sesión:", error.message);
-        btnSalir.disabled = false;
+        btnCerrarSesion.disabled = false;
         return;
       }
 
@@ -90,7 +125,6 @@ if (contenedor) {
   }
 
   // La sesión se conecta después de dibujar el menú.
-  // Si Supabase falla, el header sigue visible.
   try {
     const { supabase, cerrarSesion } = await import("/js/login.js");
 
@@ -102,7 +136,6 @@ if (contenedor) {
     }
 
     supabase.auth.onAuthStateChange((evento, sesion) => {
-      // Al cerrar sesión (en esta pestaña o en otra) se vacía el carrito local.
       if (evento === "SIGNED_OUT") {
         localStorage.removeItem("carrito_ar");
       }

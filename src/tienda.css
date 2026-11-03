@@ -5,6 +5,8 @@
   box-sizing: border-box;
 }
 
+
+
 body {
   font-family: "Helvetica Neue", Arial, sans-serif;
   color: #000;
@@ -754,4 +756,16 @@ footer {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* Transición suave para cualquier cambio de color o estado */
+.btn-agregar {
+  transition: background-color 0.25s ease, color 0.25s ease, transform 0.1s ease;
+}
+
+/* Estado cuando se agrega con éxito (Estilo Mercado Libre) */
+.btn-agregar.agregado {
+  background-color: #00a650 !important; /* Verde éxito */
+  color: #ffffff !important;
+  border-color: #00a650 !important;
 }
