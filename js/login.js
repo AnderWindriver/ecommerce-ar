@@ -1,6 +1,6 @@
-import dotenv from 'dotenv';
-dotenv.config({ path: '.env.local' });
-import { createClient } from '@supabase/supabase-js'
+//import dotenv from "dotenv";
+//dotenv.config({ path: ".env.local" });
+import { createClient } from "@supabase/supabase-js";
 
 // Configuración de Supabase mediante variables de entorno de Vite.
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
@@ -72,14 +72,14 @@ export async function iniciarSesion(email, password) {
 
 // Cerrar la sesión actual.
 export async function cerrarSesion() {
-  const { error } = await supabase.auth.signOut()
-  return { error }
+  const { error } = await supabase.auth.signOut();
+  return { error };
 }
 
 // Solicitar enlace de recuperación de contraseña vía email
 export async function solicitarRecuperacion(email) {
   const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: 'http://localhost:3000/restablecer-password', // URL de tu frontend a la que llegará el usuario
+    redirectTo: "http://localhost:3000/restablecer-password", // URL de tu frontend a la que llegará el usuario
   });
 
   return { data, error };

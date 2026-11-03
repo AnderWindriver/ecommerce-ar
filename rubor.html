@@ -1,15 +1,15 @@
 <!doctype html>
 <html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Labial - Probador AR</title>
+    <link rel="stylesheet" href="/src/tienda.css" />
+  </head>
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Labial - Probador AR</title>
-  <link rel="stylesheet" href="/src/tienda.css">
-</head>
-
-<body>
-
+  <body>
+    <div id="app-header"></div>
+    <!--
   <header>
     <div class="header-top">
       <a href="/" class="logo" style="text-decoration: none; color: inherit;">PROBADOR AR</a>
@@ -34,17 +34,18 @@
       </nav>
     </div>
   </header>
+-->
 
-  <h1 class="titulo-seccion">Rubor</h1>
-  <div class="grilla" id="grilla"></div>
+    <h1 class="titulo-seccion">Rubor</h1>
+    <div class="grilla" id="grilla"></div>
 
-  <footer>Probador AR · Demo educativa</footer>
+    <footer>Probador AR · Demo educativa</footer>
 
-  <script type="module" src="/src/ui-carrito.js"></script>
-  <script type="module">
-    import { cargarLista } from '/src/lista.js';
-    cargarLista('rubor');
-  </script>
-
+    <script type="module" src="/src/header.js"></script>
+    <script type="module" src="/src/ui-carrito.js"></script>
+    <script type="module">
+      import { cargarLista } from "/src/lista.js";
+      cargarLista("rubor");
+    </script>
   </body>
 </html>

@@ -4,9 +4,9 @@ if (contenedor) {
   contenedor.innerHTML = `
     <header>
       <div class="header-top">
-        <a href="/" class="logo" style="text-decoration:none;color:inherit">
-          PROBADOR AR
-        </a>
+        <a href="/" class="logo" aria-label="Maquillainador, ir al inicio">
+  MAQUILLAINADOR
+</a>
 
         <nav class="header-nav" aria-label="Navegación principal">
           <a href="/rubor.html">Rubor</a>
@@ -71,6 +71,7 @@ if (contenedor) {
     const botonSalir = document.createElement("button");
     botonSalir.type = "button";
     botonSalir.textContent = "Cerrar sesión";
+    botonSalir.className = "btn-cerrar-sesion";
 
     botonSalir.addEventListener("click", async () => {
       botonSalir.disabled = true;
