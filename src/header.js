@@ -48,10 +48,12 @@ if (contenedor) {
   function mostrarCuenta(sesion, cerrarSesion) {
     zonaCuenta.replaceChildren();
 
+    // Si NO hay sesión, mostramos el botón blanco limpio de "Mi cuenta"
     if (!sesion?.user) {
       const enlace = document.createElement("a");
       enlace.href = "/login.html";
       enlace.textContent = "Mi cuenta";
+      enlace.className = "enlace-mi-cuenta";
       zonaCuenta.appendChild(enlace);
       return;
     }
@@ -79,14 +81,12 @@ if (contenedor) {
 
       if (error) {
         console.error("No se pudo cerrar la sesión:", error.message);
-        botonSalir.disabled = false;
+        btnSalir.disabled = false;
         return;
       }
 
       window.location.href = "/";
     });
-
-    zonaCuenta.append(etiqueta, enlaceCuenta, botonSalir);
   }
 
   // La sesión se conecta después de dibujar el menú.

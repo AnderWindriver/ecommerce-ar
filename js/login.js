@@ -19,6 +19,7 @@ if (!SUPABASE_URL || !SUPABASE_KEY) {
 }
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
 // Registrar una nueva cuenta.
 export async function registrarUsuario(email, password, nombre) {
   const correo = email?.trim().toLowerCase();
@@ -31,10 +32,42 @@ export async function registrarUsuario(email, password, nombre) {
     };
   }
 
-  if (password.length < 6) {
+  // 1. Validación de formato básico de correo
+  const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!regexEmail.test(correo)) {
     return {
       data: null,
-      error: new Error("La contraseña debe tener al menos 6 caracteres."),
+      error: new Error("Ingresá un correo electrónico válido."),
+    };
+  }
+
+  // 2. LISTA BLANCA: Permitir únicamente dominios populares y confiables
+  const dominiosPermitidos = [
+    "gmail.com",
+    "hotmail.com",
+    "outlook.com",
+    "yahoo.com",
+    "icloud.com",
+    "live.com",
+    "hotmail.es",
+    "yahoo.es"
+  ];
+
+  const partesCorreo = correo.split("@");
+  const dominio = partesCorreo[1];
+
+  if (!dominiosPermitidos.includes(dominio)) {
+    return {
+      data: null,
+      error: new Error("Por favor, utilizá un correo de un proveedor común (ej: Gmail, Outlook, Hotmail)."),
+    };
+  }
+
+  // 3. Validación de contraseña mínima de 8 caracteres
+  if (password.length < 8) {
+    return {
+      data: null,
+      error: new Error("La contraseña debe tener al menos 8 caracteres."),
     };
   }
 
@@ -50,7 +83,6 @@ export async function registrarUsuario(email, password, nombre) {
 
   return { data, error };
 }
-
 // Iniciar sesión con una cuenta existente.
 export async function iniciarSesion(email, password) {
   const correo = email?.trim().toLowerCase();
@@ -67,9 +99,37 @@ export async function iniciarSesion(email, password) {
     password,
   });
 
+  //Interceptamos y traemos un mensaje más amigable al usuario según el error recibido.
+  if (error) {
+    let mensajeAmigable = "No se pudo iniciar sesión. Intentá nuevamente.";
+
+    if (error.message.includes("Invalid login credentials")) {
+      mensajeAmigable = "Correo o contraseña incorrectos.";
+    } else if (error.message.includes("Email not confirmed")) {
+      mensajeAmigable = "Por favor, verificá tu bandeja de entrada y confirmá tu correo antes de iniciar sesión.";
+    }
+
+    return { data: null, error: new Error(mensajeAmigable) };
+  }
+
+  // Si el inicio de sesión fue exitoso, aseguramos que su perfil exista en 'public.usuarios'
+  if (data?.user) {
+    const usuario = data.user;
+    const { error: perfilError } = await supabase
+      .from('usuarios')
+      .upsert({
+        id_usuario: usuario.id,
+        email: usuario.email,
+        nombre: usuario.user_metadata?.nombre || 'Usuario'
+      }, { onConflict: 'id_usuario' });
+
+    if (perfilError) {
+      console.error('❌ Error al sincronizar el perfil del usuario:', perfilError.message);
+    }
+  }
+
   return { data, error };
 }
-
 // Cerrar la sesión actual.
 export async function cerrarSesion() {
   const { error } = await supabase.auth.signOut();
@@ -92,4 +152,11 @@ export async function actualizarPassword(nuevaPassword) {
   });
 
   return { data, error };
+}
+
+//Recuperar contraseña mediante correo electrónico.
+export async function recuperarContrasena(email) {
+  return await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${window.location.origin}/login.html`,
+  });
 }
