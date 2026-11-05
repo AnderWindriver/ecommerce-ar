@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pago de demostración | Probador AR</title>
+    <link rel="stylesheet" href="/src/tienda.css" />
+  </head>
+  <body>
+    <div id="app-header"></div>
+    <h1 class="titulo-seccion">Finalizar compra</h1>
+
+    <main class="checkout-contenedor">
+      <section class="checkout-panel" aria-labelledby="resumen-titulo">
+        <h2 id="resumen-titulo">Resumen del pedido</h2>
+        <div id="resumen-pago"></div>
+        <p class="pedido-total">Total: <span id="total-pago">$0</span></p>
+      </section>
+
+      <section class="checkout-panel" aria-labelledby="metodos-titulo">
+        <h2 id="metodos-titulo">Medio de pago</h2>
+        <p>Elegí una opción. El pago es una simulación y no se procesarán transacciones.</p>
+        <form id="form-pago">
+          <label class="metodo-pago">
+            <input type="radio" name="metodo" value="Transferencia" />
+            <span>
+              <strong>Transferencia</strong>
+              <small>Simulación de pago mediante transferencia bancaria.</small>
+            </span>
+          </label>
+          <label class="metodo-pago">
+            <input type="radio" name="metodo" value="Bitcoin" />
+            <span>
+              <strong>Bitcoin</strong>
+              <small>Simulación de pago con criptomoneda.</small>
+            </span>
+          </label>
+          <label class="metodo-pago">
+            <input type="radio" name="metodo" value="Tarjeta" />
+            <span>
+              <strong>Tarjeta</strong>
+              <small>No se solicitarán ni guardarán datos de tarjeta.</small>
+            </span>
+          </label>
+          <div class="checkout-acciones">
+            <button id="confirmar-pago" class="btn-probar" type="submit">
+              Confirmar compra de demostración
+            </button>
+            <a href="/html/carrito.html">Volver al carrito</a>
+          </div>
+        </form>
+        <p id="mensaje-pago" class="checkout-mensaje" role="status"></p>
+      </section>
+    </main>
+
+    <footer>Probador AR · Pago simulado para demostración</footer>
+
+    <script type="module" src="/src/header.js"></script>
+    <script type="module" src="/src/ui-carrito.js"></script>
+    <script type="module" src="/src/pagos.js"></script>
+  </body>
+</html>

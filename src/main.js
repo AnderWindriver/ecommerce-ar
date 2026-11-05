@@ -12,8 +12,11 @@ const el = {
   producto: document.getElementById('texto-producto'),
   panel: document.getElementById('panel-control'),
   info: document.getElementById('info-panel'),
+  linkCatalogo: document.getElementById('btn-volver-catalogo'),
   btnFloat: document.getElementById('btn-flotante'),
   btnLimpiar: document.getElementById('btn-limpiar'),
+  btnAgregarCarrito: document.getElementById('btn-agregar-carrito'),
+  estadoCarrito: document.getElementById('estado-carrito-ar'),
   paleta: document.getElementById('paleta-colores'),
   loader: document.getElementById('indicador-carga'),
 };
@@ -25,6 +28,11 @@ let productosDeAPI = [];
 
 // ACA GUARDAMOS EL ESTADO DE LO QUE ESTA PUESTO
 let capasActivas = {
+  rubor: null,
+  sombra: null,
+  labial: null
+};
+const productosActivos = {
   rubor: null,
   sombra: null,
   labial: null
@@ -71,6 +79,7 @@ async function iniciar() {
 
       if (prodEncontrado) {
         categoria = tipoURL;
+        actualizarEnlaceCatalogo(tipoURL);
         el.selCat.value = tipoURL;
         llenarMenuProductos(tipoURL);
         el.selProd.value = idURL;
@@ -89,6 +98,7 @@ async function iniciar() {
 }
 
 function cargarDefault() {
+  actualizarEnlaceCatalogo('labial');
   el.selCat.value = 'labial';
   llenarMenuProductos('labial');
   el.selProd.value = 'l1';
@@ -100,6 +110,7 @@ function prepararMenus() {
   el.selCat.addEventListener('change', (e) => {
     const cat = e.target.value;
     if (cat && productos[cat]) {
+      actualizarEnlaceCatalogo(cat);
       llenarMenuProductos(cat);
       categoria = cat;
       
@@ -141,9 +152,15 @@ function prepararMenus() {
       capasActivas.rubor = null;
       capasActivas.sombra = null;
       capasActivas.labial = null;
+      productosActivos.rubor = null;
+      productosActivos.sombra = null;
+      productosActivos.labial = null;
       el.paleta.innerHTML = ''; // Limpiamos los circulitos para que se vea que se borro
+      actualizarBotonCarrito();
     });
   }
+
+  el.btnAgregarCarrito?.addEventListener('click', agregarSeleccionadosAlCarrito);
 }
 
 function llenarMenuProductos(cat) {
@@ -168,36 +185,100 @@ function llenarMenuProductos(cat) {
   });
 }
 
+function actualizarEnlaceCatalogo(cat) {
+  if (el.linkCatalogo && productos[cat]) {
+    el.linkCatalogo.href = `/html/${cat}.html`;
+  }
+}
+
 // 5. Dibujar paleta de colores
 function cargarProductoEnAR(prod) {
   el.producto.textContent = prod.nombre;
   el.paleta.innerHTML = '';
-  
-  prod.tonos.forEach((tono, i) => {
+
+  const tonos = prod.tonos?.length
+    ? prod.tonos
+    : [{ nombre: 'Único', color: '#E91E63' }];
+  const tonoSeleccionado =
+    tonos.find((tono) => tono.color === capasActivas[categoria]) || tonos[0];
+  productosActivos[categoria] = { producto: prod, tono: tonoSeleccionado };
+  capasActivas[categoria] = tonoSeleccionado.color;
+
+  tonos.forEach((tono) => {
     const sw = document.createElement('div');
     sw.className = 'color-swatch';
     sw.style.background = tono.color;
     
     // Marco el tono activo
-    if (capasActivas[categoria] === tono.color) {
+    if (tonoSeleccionado === tono) {
       sw.classList.add('activo');
     }
 
     sw.addEventListener('click', () => {
+      productosActivos[categoria] = { producto: prod, tono };
       aplicarCapa(categoria, tono.color);
       
       // Actualizamos los bordes visuales
       el.paleta.querySelector('.activo')?.classList.remove('activo');
       sw.classList.add('activo');
+      actualizarBotonCarrito();
     });
 
     el.paleta.appendChild(sw);
   });
 
-  // Si no hay ninguna capa activa en esta categorIa, aplicamos la primera por defecto
-  if (!capasActivas[categoria] && prod.tonos.length > 0) {
-    aplicarCapa(categoria, prod.tonos[0].color);
-    el.paleta.querySelector('.color-swatch')?.classList.add('activo');
+  aplicarCapa(categoria, tonoSeleccionado.color);
+  actualizarBotonCarrito();
+}
+
+function actualizarBotonCarrito() {
+  if (!el.btnAgregarCarrito) return;
+
+  const cantidad = Object.values(productosActivos).filter(Boolean).length;
+  el.btnAgregarCarrito.disabled = cantidad === 0;
+  el.btnAgregarCarrito.textContent = cantidad
+    ? `Agregar ${cantidad} ${cantidad === 1 ? 'producto seleccionado' : 'productos seleccionados'} al carrito`
+    : 'Agregar seleccionados al carrito';
+}
+
+async function agregarSeleccionadosAlCarrito() {
+  const seleccionados = Object.entries(productosActivos)
+    .filter(([, seleccion]) => seleccion)
+    .map(([tipo, seleccion]) => ({ ...seleccion, tipo }));
+  if (seleccionados.length === 0 || !el.btnAgregarCarrito) return;
+
+  el.btnAgregarCarrito.disabled = true;
+  el.estadoCarrito.textContent = 'Agregando productos al carrito...';
+  el.estadoCarrito.classList.remove('error');
+
+  try {
+    const { agregarAlCarrito } = await import('./carrito.js');
+    let agregados = 0;
+
+    for (const { producto, tono, tipo } of seleccionados) {
+      const resultado = await agregarAlCarrito({ ...producto, tipo }, tono);
+      if (!resultado) break;
+      agregados += 1;
+    }
+
+    if (agregados === seleccionados.length) {
+      el.estadoCarrito.textContent =
+        `${agregados} ${agregados === 1 ? 'producto agregado' : 'productos agregados'} al carrito.`;
+    } else if (agregados > 0) {
+      el.estadoCarrito.textContent =
+        `Se agregaron ${agregados} de ${seleccionados.length} productos. Revisá el carrito.`;
+      el.estadoCarrito.classList.add('error');
+    } else {
+      el.estadoCarrito.textContent =
+        'No se pudieron agregar los productos. Iniciá sesión y volvé a intentarlo.';
+      el.estadoCarrito.classList.add('error');
+    }
+  } catch (error) {
+    console.error('No se pudieron agregar los productos del probador:', error);
+    el.estadoCarrito.textContent = 'No se pudieron agregar los productos al carrito.';
+    el.estadoCarrito.classList.add('error');
+  } finally {
+    actualizarBotonCarrito();
   }
 }
 

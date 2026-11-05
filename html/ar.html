@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+  <title>Probador AR - Maquillaje Virtual</title>
+  <link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+
+  <div class="cargando" id="indicador-carga">Cargando cámara...</div>
+
+  <div class="info-box" id="info-panel">
+    <span id="texto-producto">Cargando...</span>
+    <span class="precio" id="texto-precio"></span>
+  </div>
+
+  <a id="btn-volver-catalogo" class="btn-volver-catalogo" href="/html/index.html">
+    ← Volver al catálogo
+  </a>
+
+  <button class="btn-flotante" id="btn-flotante">⚙️</button>
+
+  <div class="panel-control" id="panel-control">
+    <button class="btn-minimizar" id="btn-minimizar">▼ Ocultar panel ▼</button>
+
+    <div class="contenido-panel">
+      <div>
+        <label for="selector-categoria">Categoría:</label>
+        <select id="selector-categoria">
+          <option value="rubor">Rubor</option>
+          <option value="sombra">Sombra de ojos</option>
+          <option value="labial" selected>Labial</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="selector-producto">Elegir Producto:</label>
+        <select id="selector-producto">
+          <option value="">Cargando...</option>
+        </select>
+      </div>
+
+      <div id="bloque-paleta">
+        <label>Color:</label>
+        <div class="paleta-colores" id="paleta-colores"></div>
+      </div>
+
+      <button id="btn-agregar-carrito" class="btn-agregar-carrito" type="button" disabled>
+        Agregar seleccionados al carrito
+      </button>
+      <p id="estado-carrito-ar" class="estado-carrito-ar" role="status" aria-live="polite"></p>
+
+      <!-- BOTON PARA BORRAR TODO (Dejo el css)-->
+      <button id="btn-limpiar" style="background: #FF3B30; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; width: 100%;">
+        🗑️ Borrar todo el maquillaje
+      </button>
+
+    </div>
+  </div>
+
+  <video id="camera" autoplay playsinline muted style="display:none;"></video>
+  <canvas id="output"></canvas>
+
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh@0.4.1633559619/face_mesh.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3.1675466862/camera_utils.js" crossorigin="anonymous"></script>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

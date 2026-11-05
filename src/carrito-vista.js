@@ -2,6 +2,7 @@ import { obtenerCarrito, borrarDelCarrito } from './carrito.js';
 
 const listaDiv = document.getElementById('lista-carrito');
 const totalDiv = document.getElementById('total-carrito');
+const linkPagos = document.getElementById('link-pagos');
 
 async function renderizarCarrito() {
   if (!listaDiv) return; // Si no estamos en la página del carrito, salimos
@@ -12,8 +13,11 @@ async function renderizarCarrito() {
   if (carrito.length === 0) {
     listaDiv.innerHTML = '<p style="text-align:center; padding: 20px; color: #666;">Tu carrito está vacío.</p>';
     if (totalDiv) totalDiv.textContent = 'Total: $0';
+    if (linkPagos) linkPagos.hidden = true;
     return;
   }
+
+  if (linkPagos) linkPagos.hidden = false;
 
   let total = 0;
 
