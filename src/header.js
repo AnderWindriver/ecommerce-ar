@@ -4,14 +4,14 @@ if (contenedor) {
   contenedor.innerHTML = `
     <header>
       <div class="header-top">
-        <a href="/" class="logo" style="text-decoration:none;color:inherit">
-          PROBADOR AR
+        <a href="/html/index.html" class="logo" aria-label="Maquillainador, ir al inicio">
+          MAQUILLAINADOR
         </a>
 
         <nav class="header-nav" aria-label="Navegación principal">
-          <a href="/rubor.html">Rubor</a>
-          <a href="/labial.html">Labial</a>
-          <a href="/sombra.html">Sombra</a>
+          <a href="/html/rubor.html">Rubor</a>
+          <a href="/html/labial.html">Labial</a>
+          <a href="/html/sombra.html">Sombra</a>
 
           <div class="mini-carrito-wrapper">
             <button
@@ -33,10 +33,10 @@ if (contenedor) {
             </div>
           </div>
 
-          <a href="/ar/" class="destacado">Probar en AR</a>
+          <a href="/html/ar.html" class="destacado">Probar en AR</a>
 
           <div id="zona-cuenta">
-            <a href="/login.html">Mi cuenta</a>
+            <a href="/html/login.html">Mi cuenta</a>
           </div>
         </nav>
       </div>
@@ -51,7 +51,7 @@ function mostrarCuenta(sesion, cerrarSesion) {
     // Si NO hay sesión, mostramos el botón blanco limpio de "Mi cuenta"
     if (!sesion?.user) {
       const enlace = document.createElement("a");
-      enlace.href = "/login.html";
+      enlace.href = "/html/login.html";
       enlace.textContent = "Mi cuenta";
       enlace.className = "enlace-mi-cuenta";
       zonaCuenta.appendChild(enlace);
@@ -128,7 +128,7 @@ function mostrarCuenta(sesion, cerrarSesion) {
         return;
       }
 
-      window.location.href = "/";
+      window.location.href = "/html/index.html";
     });
   }
 

@@ -9,7 +9,7 @@ categorias.forEach(tipo => {
 
   const tarjeta = document.createElement('a');
   tarjeta.className = 'tarjeta';
-  tarjeta.href = `/${tipo}.html`;
+  tarjeta.href = `/html/${tipo}.html`;
   tarjeta.innerHTML = `
     <img src="${primerTono.imagen}" alt="${destacado.nombre}">
     <div class="tarjeta-info">

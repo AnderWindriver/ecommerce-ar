@@ -71,7 +71,7 @@ export async function agregarAlCarrito(prod, tono, cantidad = 1) {
     
     if (userError || !user) {
       alert('Debes iniciar sesión para guardar productos en tu carrito.');
-      window.location.href = '/login.html';
+      window.location.href = '/html/login.html';
       // Si no está logueado, revertimos el contador visual
       window.dispatchEvent(new CustomEvent('carritoActualizado'));
       return false;

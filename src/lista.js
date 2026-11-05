@@ -29,7 +29,7 @@ export async function cargarLista(tipo) {
     const card = document.createElement('a');
     card.className = 'tarjeta';
     // Armamos la URL
-    card.href = `/producto.html?tipo=${tipo}&id=${prod.id}`;
+    card.href = `/html/producto.html?tipo=${tipo}&id=${prod.id}`;
     
     card.innerHTML = `
       <img src="${imagenAMostrar}" alt="${prod.nombre}">

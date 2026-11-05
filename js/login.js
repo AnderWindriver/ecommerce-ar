@@ -157,6 +157,6 @@ export async function actualizarPassword(nuevaPassword) {
 //Recuperar contraseña mediante correo electrónico.
 export async function recuperarContrasena(email) {
   return await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${window.location.origin}/login.html`,
+    redirectTo: `${window.location.origin}/html/login.html`,
   });
 }
