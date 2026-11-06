@@ -76,7 +76,7 @@ function renderProducto(prod, tipo) {
   nombreTono.textContent = tonoActual.nombre;
 
   // Actualizamos el enlace del botón AR
-  btnProbar.href = `/ar/?tipo=${tipo}&id=${prod.id}`;
+  btnProbar.href = `/html/ar.html?tipo=${tipo}&id=${prod.id}`;
 
   // Generamos los círculos de colores
   // Si por alguna razón no hay tonos, creamos una lista con el tono por defecto

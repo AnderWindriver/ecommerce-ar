@@ -15,6 +15,10 @@
     <span class="precio" id="texto-precio"></span>
   </div>
 
+  <a id="btn-volver-catalogo" class="btn-volver-catalogo" href="/html/index.html">
+    ← Volver al catálogo
+  </a>
+
   <button class="btn-flotante" id="btn-flotante">⚙️</button>
 
   <div class="panel-control" id="panel-control">
@@ -41,6 +45,11 @@
         <label>Color:</label>
         <div class="paleta-colores" id="paleta-colores"></div>
       </div>
+
+      <button id="btn-agregar-carrito" class="btn-agregar-carrito" type="button" disabled>
+        Agregar seleccionados al carrito
+      </button>
+      <p id="estado-carrito-ar" class="estado-carrito-ar" role="status" aria-live="polite"></p>
 
       <!-- BOTON PARA BORRAR TODO (Dejo el css)-->
       <button id="btn-limpiar" style="background: #FF3B30; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; width: 100%;">

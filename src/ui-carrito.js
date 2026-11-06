@@ -36,7 +36,7 @@ function iniciarMiniCarrito() {
   // Botón para ir a la página del carrito
   if (btnIrCarrito) {
     btnIrCarrito.addEventListener('click', () => {
-      window.location.href = '/carrito.html';
+      window.location.href = '/html/carrito.html';
     });
   }
 

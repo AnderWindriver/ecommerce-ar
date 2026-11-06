@@ -24,4 +24,4 @@ npm run dev
 ```
 
 ---
-🌐 **Dirección de acceso:** Una vez iniciado, abre en tu navegador: `http://localhost:5173/`
+🌐 **Dirección de acceso:** Una vez iniciado, abre en tu navegador: `http://localhost:5173/html/index.html` (o `http://localhost:5173/`, que redirige al inicio).

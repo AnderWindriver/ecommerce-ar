@@ -3,23 +3,19 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Rubor - Probador AR</title>
+    <title>Mis pedidos | Probador AR</title>
     <link rel="stylesheet" href="/src/tienda.css" />
   </head>
-
   <body>
     <div id="app-header"></div>
-    <h1 class="titulo-seccion">Rubor</h1>
-    <div class="grilla" id="grilla"></div>
+    <h1 class="titulo-seccion">Mis pedidos</h1>
 
-    <footer>Probador AR · Demo educativa</footer>
+    <main id="lista-pedidos" class="pedidos-contenedor" aria-live="polite"></main>
+
+    <footer>Probador AR · Historial de compras de demostración</footer>
 
     <script type="module" src="/src/header.js"></script>
     <script type="module" src="/src/ui-carrito.js"></script>
-     <script type="module">
-    import { cargarLista } from '/src/lista.js'
-    cargarLista('rubor'); 
-  </script>
-
+    <script type="module" src="/src/pedidos.js"></script>
   </body>
 </html>

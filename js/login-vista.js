@@ -151,7 +151,7 @@ if (formularioNuevaPassword) {
       mostrarMensaje("¡Contraseña actualizada con éxito! Redirigiendo a la tienda...", "info");
       
       setTimeout(() => {
-        window.location.assign("/");
+        window.location.assign("/html/index.html");
       }, 2000);
 
     } catch (error) {
@@ -187,7 +187,7 @@ if (formularioLogin) {
       }
 
       mostrarMensaje("¡Bienvenido! Redirigiendo a la tienda...");
-      window.location.assign("/");
+      window.location.assign("/html/index.html");
     } catch (error) {
       console.error("Error al iniciar sesión:", error);
       mostrarMensaje(
@@ -223,7 +223,7 @@ if (formularioRegistro) {
 
       if (data.session) {
         mostrarMensaje("¡Cuenta creada! Redirigiendo a la tienda...");
-        window.location.assign("/");
+        window.location.assign("/html/index.html");
       } else {
         mostrarMensaje(
           "Cuenta registrada. Revisá tu correo para confirmar la dirección antes de iniciar sesión.",

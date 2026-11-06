@@ -1,5 +1,3 @@
-import dotenv from 'dotenv';
-dotenv.config({ path: '.env.local' });
 import { createClient } from '@supabase/supabase-js'
 
 // Configuración de Supabase mediante variables de entorno de Vite.
@@ -157,6 +155,6 @@ export async function actualizarPassword(nuevaPassword) {
 //Recuperar contraseña mediante correo electrónico.
 export async function recuperarContrasena(email) {
   return await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${window.location.origin}/login.html`,
+    redirectTo: `${window.location.origin}/html/login.html`,
   });
 }

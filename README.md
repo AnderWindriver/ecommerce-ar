@@ -118,14 +118,3 @@ ecommerce-ar/
 1. `npm run dev`
 2. Abrir `http://localhost:3000`
 3. Click en "Probar en AR" en cualquier producto.
-
-### Probar la AR en celular
-
-1. Levantar el servidor con `ngrok`:
-   ```bash
-   npx ngrok http 3000
-   ```
-2. Abrir la URL de ngrok en el navegador del celular.
-3. Aceptar el permiso de cámara.
-
----
