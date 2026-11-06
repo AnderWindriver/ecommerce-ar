@@ -1,6 +1,6 @@
 import { supabase } from "../js/login.js";
-import { obtenerCarrito, borrarDelCarrito } from "./carrito.js";
-import { guardarPedido } from "./pedidos-storage.js";
+import { obtenerCarrito } from "./carrito.js";
+import { procesarCompra } from "./pedidos-storage.js";
 
 const resumenDiv = document.getElementById("resumen-pago");
 const totalDiv = document.getElementById("total-pago");
@@ -61,47 +61,25 @@ async function inicializarPago() {
     }
 
     confirmarBtn.disabled = true;
-    mostrarMensaje("Registrando la compra de demostración...");
-
-    const pedido = {
-      id: crypto.randomUUID(),
-      fecha: new Date().toISOString(),
-      metodo,
-      total,
-      items: carrito.map((item) => ({
-        nombre: item.nombre,
-        precio: item.precio,
-        cantidad: item.cantidad,
-        tono: item.tono?.nombre || "Tono único",
-      })),
-    };
+    mostrarMensaje("Registrando la compra...");
 
     try {
-      guardarPedido(data.user.id, pedido);
+      await procesarCompra(data.user.id);
     } catch (error) {
+      console.error("Error al procesar la compra:", error);
       mostrarMensaje(error.message, true);
       confirmarBtn.disabled = false;
       return;
     }
 
-    const resultadosBorrado = await Promise.all(
-      carrito.map((item) => borrarDelCarrito(item.id_item)),
-    );
-    const carritoVaciado = resultadosBorrado.every(Boolean);
+    // El carrito ya quedó en estado "completado": solo se notifica a la UI.
     window.dispatchEvent(new CustomEvent("carritoActualizado"));
-
-    mostrarMensaje(
-      carritoVaciado
-        ? "¡Compra de demostración confirmada! Podés consultar el pedido en tu historial."
-        : "La compra quedó registrada, pero no se pudo vaciar todo el carrito. Revisalo antes de volver a comprar.",
-    );
     form.hidden = true;
+    mostrarMensaje("¡Compra confirmada! Redirigiendo a tus pedidos...");
 
-    const enlacePedidos = document.createElement("a");
-    enlacePedidos.className = "btn-probar";
-    enlacePedidos.href = "/html/pedidos.html";
-    enlacePedidos.textContent = "Ver mis pedidos";
-    form.after(enlacePedidos);
+    setTimeout(() => {
+      window.location.href = "/html/pedidos.html";
+    }, 1200);
   });
 }
 
