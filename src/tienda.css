@@ -161,6 +161,88 @@ header {
   font-weight: 500;
 }
 
+.controles-catalogo {
+  display: grid;
+  grid-template-columns: minmax(200px, 2fr) repeat(4, minmax(130px, 1fr)) auto;
+  align-items: end;
+  gap: 16px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 40px 12px;
+}
+
+.filtro-catalogo {
+  display: grid;
+  gap: 7px;
+  color: #333;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.filtro-catalogo input,
+.filtro-catalogo select {
+  width: 100%;
+  min-width: 0;
+  min-height: 42px;
+  padding: 9px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fff;
+  color: #111;
+  font: inherit;
+  font-weight: 400;
+}
+
+.filtro-catalogo input:focus,
+.filtro-catalogo select:focus,
+.btn-limpiar-filtros:focus-visible {
+  outline: 2px solid #ff2e5b;
+  outline-offset: 2px;
+}
+
+.btn-limpiar-filtros {
+  min-height: 42px;
+  padding: 9px 14px;
+  border: 1px solid #222;
+  border-radius: 6px;
+  background: #fff;
+  color: #111;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-limpiar-filtros:hover {
+  background: #f5f5f5;
+}
+
+.estado-catalogo {
+  grid-column: 1 / -1;
+  min-height: 1.2em;
+  color: #666;
+  font-size: 14px;
+}
+
+.estado-catalogo.error {
+  color: #b91c1c;
+}
+
+.catalogo-vacio {
+  grid-column: 1 / -1;
+  padding: 24px 0;
+  color: #666;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
 /* Página de producto */
 .detalle {
   display: grid;
@@ -513,6 +595,12 @@ footer {
   margin-top: 80px;
 }
 
+@media (max-width: 1024px) {
+  .controles-catalogo {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 768px) {
   .titulo-seccion {
     font-size: 42px;
@@ -520,6 +608,18 @@ footer {
   }
   .grilla {
     padding: 20px;
+  }
+  .controles-catalogo {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 0 20px 12px;
+    gap: 12px;
+  }
+  .controles-catalogo .filtro-catalogo:first-of-type,
+  .estado-catalogo {
+    grid-column: 1 / -1;
+  }
+  .btn-limpiar-filtros {
+    grid-column: 1 / -1;
   }
   .detalle {
     grid-template-columns: 1fr;

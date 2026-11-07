@@ -7,6 +7,7 @@ export const productos = {
     {
       id: 'r1',
       nombre: 'Rubor Líquido Sunkisser',
+      marca: 'Maybelline',
       precio: 18500,
       descripcion: 'Rubor líquido con acabado glow. Se funde con la piel al instante y dura todo el día.',
       tonos: [
@@ -18,6 +19,7 @@ export const productos = {
     {
       id: 'r2',
       nombre: 'Rubor en Polvo Fit Me',
+      marca: 'Maybelline',
       precio: 15200,
       descripcion: 'Polvo compacto de larga duración. Acabado natural, ideal para todos los días.',
       tonos: [
@@ -29,6 +31,7 @@ export const productos = {
     {
       id: 'r3',
       nombre: 'Rubor Cremoso Cheek Heat',
+      marca: 'Maybelline',
       precio: 16800,
       descripcion: 'Textura cremosa que se difumina fácil. Se puede usar en mejillas y labios.',
       tonos: [
@@ -42,6 +45,7 @@ export const productos = {
     {
       id: 'l1',
       nombre: 'Labial Mate Super Stay',
+      marca: 'Maybelline',
       precio: 21000,
       descripcion: 'Labial líquido de larga duración. Acabado mate intenso que no se corre.',
       tonos: [
@@ -53,6 +57,7 @@ export const productos = {
     {
       id: 'l2',
       nombre: 'Labial Cremoso Color Sensational',
+      marca: 'Maybelline',
       precio: 19400,
       descripcion: 'Fórmula cremosa con manteca de karité. Color intenso desde la primera pasada.',
       tonos: [
@@ -64,6 +69,7 @@ export const productos = {
     {
       id: 'l3',
       nombre: 'Labial Gloss Vinyl Ink',
+      marca: 'Maybelline',
       precio: 23500,
       descripcion: 'Brillo tipo vinilo con alta pigmentación. Sensación liviana y no pegajosa.',
       tonos: [
@@ -77,6 +83,7 @@ export const productos = {
     {
       id: 's1',
       nombre: 'Paleta Nudes of New York',
+      marca: 'Maybelline',
       precio: 32000,
       descripcion: 'Doce tonos neutros para looks de día y de noche. Textura suave y pigmentada.',
       tonos: [
@@ -87,6 +94,7 @@ export const productos = {
     {
       id: 's2',
       nombre: 'Sombra Líquida Chrome',
+      marca: 'Maybelline',
       precio: 18900,
       descripcion: 'Sombra líquida con acabado metálico. Aplicación fácil con el dedo o pincel.',
       tonos: [
@@ -97,6 +105,7 @@ export const productos = {
     {
       id: 's3',
       nombre: 'Cuarteto The City Mini',
+      marca: 'Maybelline',
       precio: 26500,
       descripcion: 'Cuatro tonos que combinan entre sí. Ideal para llevar en la cartera.',
       tonos: [
