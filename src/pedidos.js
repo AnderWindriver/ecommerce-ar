@@ -22,12 +22,12 @@ async function renderizarPedidos() {
     return;
   }
 
-  const pedidos = obtenerPedidos(data.user.id);
+  const pedidos = await obtenerPedidos(data.user.id);
   if (pedidos.length === 0) {
     agregarTexto(
       contenedor,
       "pedido-vacio",
-      "Todavía no realizaste compras. Cuando confirmes una compra de demostración, aparecerá acá.",
+      "Todavía no realizaste compras. Cuando confirmes una compra, aparecerá acá.",
     );
     return;
   }
@@ -37,13 +37,13 @@ async function renderizarPedidos() {
     tarjeta.className = "pedido-card";
 
     const titulo = document.createElement("h2");
-    titulo.textContent = `Pedido ${pedido.id.slice(0, 8).toUpperCase()}`;
+    titulo.textContent = `Pedido #${String(pedido.id).slice(0, 8).toUpperCase()}`;
     tarjeta.appendChild(titulo);
 
     agregarTexto(
       tarjeta,
       "pedido-meta",
-      `${new Date(pedido.fecha).toLocaleString("es-AR")} · Pago: ${pedido.metodo}`,
+      new Date(pedido.fecha).toLocaleString("es-AR"),
     );
 
     const detalle = document.createElement("div");

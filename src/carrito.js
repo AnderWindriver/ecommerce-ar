@@ -184,3 +184,29 @@ export async function borrarDelCarrito(idItem) {
     return false;
   }
 }
+
+/**
+ * Actualiza la cantidad de un ítem del carrito.
+ */
+export async function actualizarCantidadCarrito(idItem, cantidad) {
+  if (!idItem || !Number.isSafeInteger(cantidad) || cantidad < 1) {
+    console.error('No se puede actualizar el carrito: ítem o cantidad inválidos.');
+    return false;
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('items_carrito')
+      .update({ cant: cantidad })
+      .eq('id_item', idItem)
+      .select('id_item')
+      .maybeSingle();
+
+    if (error) throw error;
+    if (!data) throw new Error('El producto ya no está disponible en el carrito.');
+    return true;
+  } catch (error) {
+    console.error('❌ Error al actualizar la cantidad del carrito:', error.message);
+    return false;
+  }
+}
