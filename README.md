@@ -83,6 +83,7 @@ El frontend **no usa actualmente Next.js ni React**. Vite sirve las páginas HTM
 - La página de inicio muestra las categorías de rubor, labial y sombra.
 - Cada categoría tiene su propia página de catálogo.
 - El catálogo combina los productos de demostración definidos en `src/productos.js` con los productos que devuelve el endpoint Express.
+- Se puede buscar por nombre o marca, filtrar por rango de precio o tono y ordenar los resultados por precio.
 - Al seleccionar un producto se abre su ficha, con descripción, precio y selección de tono.
 
 ### 2. Ficha y probador AR
