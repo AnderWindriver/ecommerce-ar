@@ -1,8 +1,29 @@
-import { obtenerCarrito, borrarDelCarrito } from './carrito.js';
+import {
+  obtenerCarrito,
+  actualizarCantidadCarrito,
+  borrarDelCarrito,
+} from './carrito.js';
 
 const listaDiv = document.getElementById('lista-carrito');
 const totalDiv = document.getElementById('total-carrito');
 const linkPagos = document.getElementById('link-pagos');
+const mensajeDiv = document.createElement('p');
+mensajeDiv.className = 'carrito-mensaje';
+mensajeDiv.setAttribute('role', 'status');
+mensajeDiv.setAttribute('aria-live', 'polite');
+mensajeDiv.hidden = true;
+listaDiv?.insertAdjacentElement('afterend', mensajeDiv);
+
+function mostrarMensaje(texto, esError = false) {
+  mensajeDiv.textContent = texto;
+  mensajeDiv.classList.toggle('error', esError);
+  mensajeDiv.hidden = false;
+}
+
+function notificarCambioCarrito() {
+  mensajeDiv.hidden = true;
+  window.dispatchEvent(new CustomEvent('carritoActualizado'));
+}
 
 async function renderizarCarrito() {
   if (!listaDiv) return; // Si no estamos en la página del carrito, salimos
@@ -23,50 +44,108 @@ async function renderizarCarrito() {
 
   carrito.forEach(item => {
     total += item.precio * item.cantidad;
-    
-    // Creamos la fila del producto (sin etiqueta de imagen)
+
     const fila = document.createElement('div');
-    fila.style.cssText = "display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #ccc; padding: 15px 0;";
-    
+    fila.className = 'fila-carrito';
+
     const colorHex = item.tono?.color || '#E91E63';
     const nombreTono = item.tono?.nombre || 'Tono único';
+    const informacion = document.createElement('div');
+    informacion.className = 'carrito-producto';
 
-    fila.innerHTML = `
-      <div style="display: flex; align-items: center; gap: 15px;">
-        <div style="width: 25px; height: 25px; border-radius: 50%; background: ${colorHex}; border: 1px solid #000; flex-shrink: 0;" title="Tono: ${nombreTono}"></div>
-        <div>
-          <strong>${item.nombre}</strong><br>
-          <span style="font-size: 14px; color: #666;">Tono: ${nombreTono} | Cant: ${item.cantidad}</span>
-        </div>
-      </div>
-      <div style="display: flex; align-items: center; gap: 20px;">
-        <span>$${(item.precio * item.cantidad).toLocaleString('es-AR')}</span>
-        <button class="btn-borrar" data-id-item="${item.id_item}" style="background: none; border: none; color: #FF2E5B; cursor: pointer; font-weight: bold; font-size: 16px;" title="Eliminar producto">✕</button>
-      </div>
-    `;
-    
+    const muestraTono = document.createElement('div');
+    muestraTono.className = 'carrito-tono';
+    muestraTono.style.backgroundColor = colorHex;
+    muestraTono.title = `Tono: ${nombreTono}`;
+    muestraTono.setAttribute('aria-hidden', 'true');
+
+    const descripcion = document.createElement('div');
+    const nombre = document.createElement('strong');
+    nombre.textContent = item.nombre;
+    const tono = document.createElement('span');
+    tono.className = 'carrito-tono-nombre';
+    tono.textContent = `Tono: ${nombreTono}`;
+    descripcion.append(nombre, tono);
+    informacion.append(muestraTono, descripcion);
+
+    const acciones = document.createElement('div');
+    acciones.className = 'carrito-acciones-item';
+
+    const controlCantidad = document.createElement('div');
+    controlCantidad.className = 'control-cantidad';
+    controlCantidad.setAttribute('aria-label', `Cantidad de ${item.nombre}`);
+
+    const btnRestar = document.createElement('button');
+    btnRestar.type = 'button';
+    btnRestar.className = 'btn-cantidad';
+    btnRestar.textContent = '−';
+    btnRestar.setAttribute('aria-label', `Restar una unidad de ${item.nombre}`);
+    btnRestar.disabled = item.cantidad <= 1;
+    btnRestar.addEventListener('click', () =>
+      cambiarCantidad(item, item.cantidad - 1, btnRestar),
+    );
+
+    const cantidad = document.createElement('span');
+    cantidad.className = 'cantidad-carrito';
+    cantidad.textContent = item.cantidad;
+    cantidad.setAttribute('aria-live', 'polite');
+
+    const btnSumar = document.createElement('button');
+    btnSumar.type = 'button';
+    btnSumar.className = 'btn-cantidad';
+    btnSumar.textContent = '+';
+    btnSumar.setAttribute('aria-label', `Sumar una unidad de ${item.nombre}`);
+    btnSumar.addEventListener('click', () =>
+      cambiarCantidad(item, item.cantidad + 1, btnSumar),
+    );
+
+    controlCantidad.append(btnRestar, cantidad, btnSumar);
+
+    const precio = document.createElement('strong');
+    precio.className = 'precio-item-carrito';
+    precio.textContent = `$${(item.precio * item.cantidad).toLocaleString('es-AR')}`;
+
+    const btnBorrar = document.createElement('button');
+    btnBorrar.type = 'button';
+    btnBorrar.className = 'btn-borrar';
+    btnBorrar.textContent = 'Eliminar';
+    btnBorrar.setAttribute('aria-label', `Eliminar ${item.nombre} del carrito`);
+    btnBorrar.addEventListener('click', () => eliminarItem(item.id_item, btnBorrar));
+
+    acciones.append(controlCantidad, precio, btnBorrar);
+    fila.append(informacion, acciones);
     listaDiv.appendChild(fila);
   });
 
   if (totalDiv) {
     totalDiv.textContent = `Total: $${total.toLocaleString('es-AR')}`;
   }
+}
 
-  // Escuchar los botones de borrar
-  document.querySelectorAll('.btn-borrar').forEach(btn => {
-    btn.addEventListener('click', async (e) => {
-      const idItem = e.target.getAttribute('data-id-item');
-      
-      // Borramos usando el id único del ítem en Supabase
-      const exito = await borrarDelCarrito(idItem);
-      
-      if (exito) {
-        await renderizarCarrito(); // Volvemos a dibujar la lista localmente
-        // Avisamos a todo el sistema que el carrito cambió
-        window.dispatchEvent(new CustomEvent('carritoActualizado'));
-      }
-    });
-  });
+async function cambiarCantidad(item, nuevaCantidad, boton) {
+  boton.disabled = true;
+  const exito = await actualizarCantidadCarrito(item.id_item, nuevaCantidad);
+
+  if (!exito) {
+    mostrarMensaje('No se pudo actualizar la cantidad. Intentá nuevamente.', true);
+    boton.disabled = false;
+    return;
+  }
+
+  notificarCambioCarrito();
+}
+
+async function eliminarItem(idItem, boton) {
+  boton.disabled = true;
+  const exito = await borrarDelCarrito(idItem);
+
+  if (!exito) {
+    mostrarMensaje('No se pudo eliminar el producto. Intentá nuevamente.', true);
+    boton.disabled = false;
+    return;
+  }
+
+  notificarCambioCarrito();
 }
 
 // Inicialización segura para cuando cargue el DOM
